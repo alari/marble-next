@@ -133,3 +133,47 @@
 - Update task status at the end of each significant action
 - Each task should represent an achievable unit of work that can be completed in a reasonable timeframe
 - Break down large features into smaller, trackable tasks
+
+## 12. Initial Session Workflow
+
+- When beginning a new chat with these guidelines:
+  * Read only the minimal set of files needed to understand the project basics:
+    - README.md (for project overview)
+    - Root Cargo.toml (for project structure)
+    - spec/spec.md (if available, for domain context)
+  * After reading these initial files, reach back to clarify next steps
+  * Explicitly ask what to focus on next:
+    - "Would you like me to focus on improving specifications?"
+    - "Should I work on implementation of a specific feature?"
+    - "Would you like me to help with testing or refactoring?"
+  * Take no actions and make no changes until receiving explicit direction
+  * When given direction, follow the principles in these guidelines
+  * Prioritize understanding over action until the path forward is clear
+
+## 13. Handoff Process
+
+- Maintain handoff files in a dedicated `spec/handoffs/` directory
+- In `spec/spec.md`, include a "Current Handoffs" section listing active handoff files:
+  Current Handoffs
+
+  [User Authentication](handoffs/user_auth.md) - Basic login flow implemented
+  [Task Management](handoffs/task_management.md) - API design in progress
+- Create individual handoff files for each feature/task in progress
+- Name files descriptively: `spec/handoffs/feature_name.md`
+- After significant changes, update the relevant handoff file with:
+  * Current status summary (1-2 sentences)
+  * What was accomplished in the current session
+  * Key insights and decisions from our discussions
+  * Architectural or design decisions made
+  * Known issues, limitations, or challenges
+  * Next steps to continue work
+  * References to relevant spec files and code
+  * Any blockers or questions that need resolution
+- Completely rewrite each handoff file after significant changes
+- At the beginning of a session:
+  * Reference the handoff list from `spec/spec.md` without reading individual handoff files
+  * Ask if any specific handoff should be read
+  * Only read the requested handoff file(s)
+  * Wait for explicit instructions before taking action, even after reading handoffs
+- Link from handoff files to relevant specs and from specs to relevant handoffs when appropriate
+- Include a "Last updated" timestamp at the top of each handoff file
