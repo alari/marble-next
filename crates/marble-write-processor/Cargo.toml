@@ -1,0 +1,12 @@
+[package]
+name = "marble-write-processor"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Write model processor for Marble"
+
+[dependencies]
+marble_core.workspace = true
+marble-db.workspace = true
+marble-storage.workspace = true
+# Dependencies will be added as needed

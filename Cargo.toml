@@ -1,0 +1,26 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/marble_core",
+    "crates/marble-db",
+    "crates/marble-storage",
+    "crates/marble-write-processor",
+    "crates/marble-read-processor",
+    "bin/marble-webdav",
+]
+
+[workspace.dependencies]
+# Internal crates
+marble_core = { path = "crates/marble_core" }
+marble-db = { path = "crates/marble-db" }
+marble-storage = { path = "crates/marble-storage" }
+marble-write-processor = { path = "crates/marble-write-processor" }
+marble-read-processor = { path = "crates/marble-read-processor" }
+
+# Common dependencies will be added here when needed
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = []
+description = "Marble Next project"

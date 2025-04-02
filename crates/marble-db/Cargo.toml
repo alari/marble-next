@@ -1,0 +1,10 @@
+[package]
+name = "marble-db"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Database schema and operations for Marble"
+
+[dependencies]
+marble_core.workspace = true
+# Dependencies will be added as needed

@@ -1,0 +1,185 @@
+# Marble Database Specification
+
+## Overview
+
+The `marble-db` crate manages the PostgreSQL database schema and operations for Marble. It provides the metadata storage layer that complements the S3-based content storage, enabling efficient querying, relationship tracking, and incremental processing.
+
+## Responsibilities
+
+- Define and manage the database schema
+- Provide typed query interfaces for common operations
+- Track file metadata, paths, and relationships
+- Support versioning and history tracking
+- Facilitate incremental processing through dependency tracking
+- Store user authentication data
+- Manage garbage collection of orphaned content
+
+## Schema Design
+
+### Core Tables
+
+#### `users`
+- Stores user authentication information
+- Fields:
+  - `id`: Primary key
+  - `username`: Unique username
+  - `password_hash`: Securely stored password hash
+  - `created_at`: Timestamp
+  - `last_login`: Timestamp
+
+#### `files`
+- Tracks current state of each file
+- Fields:
+  - `id`: Primary key
+  - `user_id`: Foreign key to users
+  - `path`: File path in the vault
+  - `content_hash`: Current content hash (links to S3)
+  - `content_type`: MIME type or file format
+  - `size`: File size
+  - `created_at`: Timestamp
+  - `updated_at`: Timestamp
+  - `is_deleted`: Tombstone flag
+
+#### `file_versions`
+- Historical record of file changes
+- Fields:
+  - `id`: Primary key
+  - `file_id`: Foreign key to files
+  - `content_hash`: Content hash for this version
+  - `version_number`: Sequential version number
+  - `created_at`: Timestamp when this version was created
+  - `metadata`: Additional version metadata
+
+#### `folders`
+- Tracks folder structure
+- Fields:
+  - `id`: Primary key
+  - `user_id`: Foreign key to users
+  - `path`: Folder path
+  - `parent_id`: Foreign key to parent folder
+  - `created_at`: Timestamp
+  - `updated_at`: Timestamp
+  - `is_deleted`: Tombstone flag
+
+### Content Analysis Tables
+
+#### `frontmatter`
+- Extracted frontmatter data
+- Fields:
+  - `id`: Primary key
+  - `file_id`: Foreign key to files
+  - `publish`: Boolean flag for publishing
+  - `permalink`: URL path if specified
+  - `tags`: Array of tags
+  - `aliases`: Array of alternative names
+  - `section`: Section information
+  - `description`: Content description
+  - `title`: Content title
+  - `created_date`: Date from frontmatter
+  - `updated_date`: Date from frontmatter
+  - `published_date`: Date from frontmatter
+  - `layout`: Layout type
+  - `other_data`: JSONB for additional fields
+
+#### `references`
+- Links between files (Obsidian references)
+- Fields:
+  - `id`: Primary key
+  - `source_file_id`: Foreign key to source file
+  - `target_path`: Referenced path (may be resolved via aliases)
+  - `display_text`: Text displayed for the reference
+  - `original_syntax`: Original Obsidian reference syntax
+  - `target_file_id`: Foreign key to target file (if resolved)
+
+#### `embeds`
+- Embeds between files (Obsidian embeds)
+- Fields:
+  - `id`: Primary key
+  - `source_file_id`: Foreign key to source file
+  - `target_path`: Embedded path
+  - `fragment`: Section fragment if any
+  - `original_syntax`: Original Obsidian embed syntax
+  - `target_file_id`: Foreign key to target file (if resolved)
+
+### Processing Tables
+
+#### `processing_queue`
+- Tracks files needing processing
+- Fields:
+  - `id`: Primary key
+  - `file_id`: Foreign key to files
+  - `operation`: Type of change (create, update, delete)
+  - `enqueued_at`: When it was added to queue
+  - `priority`: Processing priority
+  - `status`: Current status (pending, processing, completed)
+  - `last_attempt`: Timestamp of last processing attempt
+  - `attempts`: Number of processing attempts
+
+#### `published_content`
+- Tracks what content is published
+- Fields:
+  - `id`: Primary key
+  - `file_id`: Foreign key to source file
+  - `permalink`: Published path
+  - `processed_hash`: Hash of processed content
+  - `published_at`: When it was published
+  - `invalidated`: Whether it needs reprocessing
+
+#### `cache_invalidations`
+- Tracks what needs to be reprocessed
+- Fields:
+  - `id`: Primary key
+  - `path`: Path pattern to invalidate
+  - `created_at`: When invalidation was created
+  - `processed`: Whether it has been processed
+
+## API Design
+
+The `marble-db` crate will provide typed interfaces for common database operations:
+
+```rust
+// Example API (to be refined)
+pub struct MarbleDb {
+    pool: PgPool,
+}
+
+impl MarbleDb {
+    // File operations
+    async fn get_file(&self, user_id: i32, path: &str) -> Result<File, DbError>;
+    async fn create_file(&self, user_id: i32, path: &str, hash: &str) -> Result<File, DbError>;
+    async fn update_file(&self, file_id: i32, hash: &str) -> Result<File, DbError>;
+    async fn mark_deleted(&self, file_id: i32) -> Result<(), DbError>;
+    
+    // Version history
+    async fn get_file_versions(&self, file_id: i32) -> Result<Vec<FileVersion>, DbError>;
+    async fn get_file_at_version(&self, file_id: i32, version: i32) -> Result<FileVersion, DbError>;
+    
+    // Content analysis
+    async fn get_frontmatter(&self, file_id: i32) -> Result<Frontmatter, DbError>;
+    async fn update_frontmatter(&self, file_id: i32, frontmatter: &Frontmatter) -> Result<(), DbError>;
+    async fn get_file_references(&self, file_id: i32) -> Result<Vec<Reference>, DbError>;
+    async fn get_referencing_files(&self, file_id: i32) -> Result<Vec<Reference>, DbError>;
+    
+    // Processing queue
+    async fn enqueue_file(&self, file_id: i32, operation: OperationType) -> Result<(), DbError>;
+    async fn get_processing_batch(&self, max_items: i32) -> Result<Vec<QueueItem>, DbError>;
+    async fn mark_processed(&self, queue_id: i32) -> Result<(), DbError>;
+    
+    // Publication
+    async fn get_published_content(&self, user_id: i32) -> Result<Vec<PublishedContent>, DbError>;
+    async fn invalidate_cache(&self, path_pattern: &str) -> Result<(), DbError>;
+}
+```
+
+## Integration Points
+
+- **Storage Layer**: Uses database to map paths to content hashes
+- **Processor**: Queries for changed files and their dependencies
+- **WebDAV Server**: Uses database for authentication and path resolution
+
+## Future Considerations
+
+- Optimize indices for common query patterns
+- Consider partitioning for multi-tenant scalability
+- Implement efficient batch operations for bulk updates
+- Design migration strategy for schema evolution
