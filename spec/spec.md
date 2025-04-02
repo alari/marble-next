@@ -61,6 +61,10 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
    - Generates styled HTML output with Handlebars templates and markdown-it
    - Implements caching for performance
 
+## Current Handoffs
+
+[Database Schema](handoffs/database_schema.md) - Database schema specification refinement in progress
+
 ## Component Index
 
 - [Architecture Diagram](./architecture_diagram.md)
