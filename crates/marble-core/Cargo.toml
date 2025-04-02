@@ -1,9 +1,9 @@
 [package]
-name = "marble_core"
+name = "marble-core"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
-description = "Core functionality for Marble Next"
+description = "Core functionality for Marble"
 
 [dependencies]
 # Dependencies will be added as needed

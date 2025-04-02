@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/marble_core",
+    "crates/marble-core",
     "crates/marble-db",
     "crates/marble-storage",
     "crates/marble-write-processor",
@@ -11,7 +11,7 @@ members = [
 
 [workspace.dependencies]
 # Internal crates
-marble_core = { path = "crates/marble_core" }
+marble-core = { path = "crates/marble-core" }
 marble-db = { path = "crates/marble-db" }
 marble-storage = { path = "crates/marble-storage" }
 marble-write-processor = { path = "crates/marble-write-processor" }

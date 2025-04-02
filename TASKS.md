@@ -102,7 +102,7 @@
 
 - [DONE] Define crate structure
   - Crates identified:
-    - `marble_core`: Shared types, frontmatter definitions, and utilities
+    - `marble-core`: Shared types, frontmatter definitions, and utilities
     - `marble-db`: Database schema and operations with PostgreSQL
     - `marble-storage`: OpenDAL backend implementations for raw and processed data
     - `marble-write-processor`: Content analysis and metadata extraction

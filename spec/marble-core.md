@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `marble_core` crate provides shared functionality, types, and interfaces used by both the Write Side and Read Side components of Marble. It establishes the foundational data model and common utilities needed across the system.
+The `marble-core` crate provides shared functionality, types, and interfaces used by both the Write Side and Read Side components of Marble. It establishes the foundational data model and common utilities needed across the system.
 
 ## Responsibilities
 

@@ -17,7 +17,7 @@ Key aspects:
 
 Marble is built on a hybrid storage architecture using S3 for content and PostgreSQL for metadata, with several components handling different responsibilities:
 
-1. **Core Components (`marble_core`)**:
+1. **Core Components (`marble-core`)**:
    - Defines shared data models and types
    - Provides authentication interfaces
    - Implements common utilities
@@ -69,7 +69,7 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
 - [Database Schema](./database_schema.md)
 
 ### Crate Specifications
-- [Marble Core](./marble_core.md)
+- [Marble Core](./marble-core.md)
 - [Marble Database](./marble_db.md)
 - [Marble Storage](./marble_storage.md)
 - [Marble Write Processor](./marble_write_processor.md)

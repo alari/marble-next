@@ -6,7 +6,7 @@ This document outlines the dependencies between the various crates in the Marble
 
 ```mermaid
 graph TD
-    Core[marble_core]
+    Core[marble-core]
     DB[marble-db]
     Storage[marble-storage]
     WriteProc[marble-write-processor]
@@ -44,7 +44,7 @@ graph TD
 
 ### Core Crates
 
-- **marble_core**: Fundamental types and interfaces used across the system
+- **marble-core**: Fundamental types and interfaces used across the system
   - Frontmatter definitions
   - Authentication interfaces
   - Common utilities
@@ -87,7 +87,7 @@ graph TD
 
 The suggested implementation order is:
 
-1. **marble_core**: Establishes shared types and interfaces
+1. **marble-core**: Establishes shared types and interfaces
 2. **marble-db**: Creates database foundation
 3. **marble-storage**: Implements storage layer
 4. **marble-webdav**: Provides client interface

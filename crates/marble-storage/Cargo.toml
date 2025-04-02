@@ -6,6 +6,6 @@ authors.workspace = true
 description = "Storage backends for Marble"
 
 [dependencies]
-marble_core.workspace = true
+marble-core.workspace = true
 marble-db.workspace = true
 # Dependencies will be added as needed

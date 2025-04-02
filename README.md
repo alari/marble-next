@@ -19,7 +19,7 @@ cargo build
 
 The project is organized as a Rust workspace with the following components:
 
-- `crates/marble_core`: Shared types, frontmatter definitions, and utilities
+- `crates/marble-core`: Shared types, frontmatter definitions, and utilities
 - `crates/marble-db`: Database schema and operations with PostgreSQL
 - `crates/marble-storage`: OpenDAL backends for raw and processed data
 - `crates/marble-write-processor`: Content analysis and metadata extraction

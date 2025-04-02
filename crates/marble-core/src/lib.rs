@@ -1,9 +1,9 @@
-// This is a placeholder file for the marble_core crate
+// This is a placeholder file for the marble-core crate
 // Real implementation will be added later
 
 /// Placeholder function
 pub fn placeholder() -> &'static str {
-    "marble_core placeholder"
+    "marble-core placeholder"
 }
 
 #[cfg(test)]
@@ -12,6 +12,6 @@ mod tests {
 
     #[test]
     fn test_placeholder() {
-        assert_eq!(placeholder(), "marble_core placeholder");
+        assert_eq!(placeholder(), "marble-core placeholder");
     }
 }
