@@ -18,7 +18,19 @@ marble-write-processor = { path = "crates/marble-write-processor" }
 marble-read-processor = { path = "crates/marble-read-processor" }
 
 # Database
-sqlx = { version = "0.8.3", features = ["runtime-tokio", "tls-rustls", "postgres", "json", "time", "uuid", "migrate"] }
+sqlx = { version = "0.8.3", features = [
+    "runtime-tokio",
+    "tls-rustls",
+    "postgres",
+    "json",
+    "time",
+    "uuid",
+    "migrate",
+    "macros",
+    "chrono",
+    "ipnetwork",
+    "bit-vec"
+] }
 
 # Async runtime
 tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros"] }

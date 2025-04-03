@@ -13,11 +13,12 @@ SQLx is an async, pure Rust SQL toolkit with compile-time checked queries. It's 
 - Type-safe SQL queries
 - Migrations for schema evolution
 - Transaction management
+- Custom PostgreSQL type mapping
 
 ## Version and Features
 
 - Version: 0.8.3
-- Features:
+- Core Features:
   - `runtime-tokio`: For async operation with Tokio
   - `tls-rustls`: TLS support using Rustls
   - `postgres`: PostgreSQL driver
@@ -25,6 +26,12 @@ SQLx is an async, pure Rust SQL toolkit with compile-time checked queries. It's 
   - `time`: Timestamp and date handling
   - `uuid`: UUID type support
   - `migrate`: Database migrations
+  - `macros`: Compile-time checked queries
+
+- PostgreSQL Type Mapping Features:
+  - `chrono`: DateTime and other time types
+  - `ipnetwork`: IP network types
+  - `bit-vec`: Bit string types
 
 ## Basic Usage
 
@@ -46,6 +53,41 @@ tx.commit().await?;
 sqlx::migrate!("./migrations")
     .run(&pool)
     .await?;
+```
+
+## Custom Type Mapping
+
+SQLx supports mapping between Rust types and PostgreSQL types:
+
+```rust
+use sqlx::postgres::PgHasArrayType;
+use sqlx::Type;
+
+// Enum with PostgreSQL type mapping
+#[derive(Debug, Clone, Copy, PartialEq, Eq, sqlx::Type)]
+#[sqlx(type_name = "file_status", rename_all = "snake_case")]
+pub enum FileStatus {
+    Active,
+    Deleted,
+    Processing,
+}
+
+// Struct with PostgreSQL type mapping
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct Document {
+    pub id: i32,
+    pub title: String,
+    pub tags: Vec<String>,              // maps to text[]
+    pub metadata: serde_json::Value,    // maps to jsonb
+    pub created_at: chrono::DateTime<chrono::Utc>,
+}
+
+// Implementing array type support for custom types
+impl PgHasArrayType for FileStatus {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_file_status")
+    }
+}
 ```
 
 ## Related Specifications
