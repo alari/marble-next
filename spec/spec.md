@@ -67,22 +67,21 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
 
 ## Component Index
 
-- [Architecture Diagram](./architecture_diagram.md)
-- [Crate Dependencies](./crate_dependencies.md)
-- [Storage Architecture](./storage_architecture.md)
-- [Database Schema](./database_schema.md)
+### Domain Concepts
+- [Architecture Diagram](domain/architecture_diagram.md)
+- [Crate Dependencies](domain/crate_dependencies.md)
+- [Storage Architecture](domain/storage_architecture.md)
+- [Database Schema](domain/database_schema.md)
+- [Write Side](domain/write_side.md)
+- [Read Side](domain/read_side.md)
 
 ### Crate Specifications
-- [Marble Core](./marble-core.md)
-- [Marble Database](./marble_db.md)
-- [Marble Storage](./marble_storage.md)
-- [Marble Write Processor](./marble_write_processor.md)
-- [Marble Read Processor](./marble_read_processor.md)
-- [Marble WebDAV Server](./marble_webdav.md)
-
-### Conceptual Areas
-- [Write Side](./write_side.md)
-- [Read Side](./read_side.md)
+- [Marble Core](crates/marble-core.md)
+- [Marble Database](crates/marble_db.md)
+- [Marble Storage](crates/marble_storage.md)
+- [Marble Write Processor](crates/marble_write_processor.md)
+- [Marble Read Processor](crates/marble_read_processor.md)
+- [Marble WebDAV Server](crates/marble_webdav.md)
 
 ## Data Flow
 

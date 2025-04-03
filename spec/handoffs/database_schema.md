@@ -13,6 +13,10 @@ The database schema specification has been significantly refined. Specifically, 
 - Removed redundant fields (e.g., `resolved` boolean in favor of NULL check)
 - Updated appropriate indices to support efficient querying
 - Added considerations for next/previous navigation and recursive embed handling
+- Reorganized the specs folder structure to align with project guidelines:
+  * Created separate directories for crates, domain concepts, and handoffs
+  * Moved all spec files to appropriate directories
+  * Updated links in spec.md to reflect the new structure
 
 ## Key Insights
 - Storing references and embeds in separate tables was redundant since they contain almost identical data
@@ -21,6 +25,7 @@ The database schema specification has been significantly refined. Specifically, 
 - "Target path" was a misnomer as it stores the note title/name, not an actual file path
 - Positional information is crucial for maintaining document order and supporting navigation
 - Efficient queries for recursive embeds require special consideration for preserving order
+- Organizing specs by category (crates, domain, handoffs) improves navigation and maintenance
 
 ## Design Decisions
 - Combined `references` and `embeds` into a unified `document_links` table
@@ -31,6 +36,10 @@ The database schema specification has been significantly refined. Specifically, 
 - Created specialized indices to support common query patterns
 - Considered approaches for navigating between published documents
 - Outlined CTE-based approach for querying recursive embeds with order preservation
+- Reorganized specs according to project guidelines:
+  * `spec/crates/` for crate-specific specs
+  * `spec/domain/` for domain concept specs
+  * `spec/handoffs/` for work-in-progress handoffs
 
 ## Known Issues/Limitations
 - Several open questions still remain regarding permalink handling, frontmatter storage, content hashing conflicts, and versioning strategy
@@ -44,6 +53,6 @@ The database schema specification has been significantly refined. Specifically, 
 - Design migration strategies for schema changes
 
 ## References
-- [Database Schema Specification](../database_schema.md)
-- [Marble Database Specification](../marble_db.md)
-- [Storage Architecture](../storage_architecture.md)
+- [Database Schema Specification](../domain/database_schema.md)
+- [Marble Database Specification](../crates/marble_db.md)
+- [Storage Architecture](../domain/storage_architecture.md)
