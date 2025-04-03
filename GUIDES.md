@@ -177,3 +177,31 @@
   * Wait for explicit instructions before taking action, even after reading handoffs
 - Link from handoff files to relevant specs and from specs to relevant handoffs when appropriate
 - Include a "Last updated" timestamp at the top of each handoff file
+
+## 14. Incremental Development (CRITICAL)
+
+- Break implementation into small, focused iterations
+- Each iteration should:
+  * Implement one specific piece of functionality
+  * Be small enough to complete in a single step (typically <100 lines of new code)
+  * Compile successfully
+  * Be testable whenever possible
+- After EACH iteration:
+  * Update the relevant handoff file
+  * Review and update affected spec files
+  * Verify compliance with all guidelines
+- Propose the next increment explicitly before proceeding
+- Never attempt to implement an entire feature in one step
+- When describing the next increment, be specific about:
+  * What will be implemented
+  * Which files will be modified
+  * Expected outcome
+- If `cargo build` fails:
+  * Report the error immediately
+  * Propose a solution
+  * Wait for explicit approval before implementing the fix
+- Always verify dependencies before adding them:
+  * Check that you're using current versions
+  * Confirm they're added to the correct Cargo.toml location
+  * Use .workspace = true syntax for workspace dependencies
+- Remember: Many small working steps are better than one large implementation that might not compile
