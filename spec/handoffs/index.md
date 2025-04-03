@@ -7,6 +7,7 @@ This directory contains handoff documents for work-in-progress features and task
 ## Active Handoffs
 
 - [Database Schema](database_schema.md) - Database schema specification refinement
+- [Dependencies Update](dependencies_update.md) - Added key dependencies for core functionality
 
 ## Template
 
@@ -17,6 +18,7 @@ This directory contains handoff documents for work-in-progress features and task
 | Handoff | Last Updated | Current Status | Next Steps |
 |---------|--------------|----------------|------------|
 | Database Schema | 2025-04-03 | Consolidating reference and embed tables | Implement schema in marble_db |
+| Dependencies Update | 2025-04-03 | Added all required dependencies | Document remaining dependencies and begin implementation |
 
 ## Handoff Process
 

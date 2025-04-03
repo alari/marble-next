@@ -65,7 +65,8 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
 
 ## Current Handoffs
 
-[Database Schema](handoffs/database_schema.md) - Database schema specification refinement in progress
+- [Database Schema](handoffs/database_schema.md) - Database schema specification refinement in progress
+- [Dependencies Update](handoffs/dependencies_update.md) - Added key dependencies for core functionality
 
 ## Component Index
 
@@ -79,7 +80,7 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
 - [Read Side](domain/read_side.md) - Content publishing process
 
 ### Crate Specifications
-- [Marble Core](crates/marble-core.md) - Shared types and utilities
+- [Marble Core](crates/marble_core.md) - Shared types and utilities
 - [Marble Database](crates/marble_db.md) - Database operations
 - [Marble Storage](crates/marble_storage.md) - Storage abstraction
 - [Marble Write Processor](crates/marble_write_processor.md) - Content analysis
@@ -88,6 +89,11 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
 
 ### External Dependencies
 - [OpenDAL](dependencies/opendal.md) - Storage abstraction library
+- [SQLx](dependencies/sqlx.md) - Database interaction
+- [dotenv](dependencies/dotenv.md) - Environment variable loading
+- [tracing](dependencies/tracing.md) - Structured logging
+- [serde](dependencies/serde.md) - Serialization framework
+- [chrono](dependencies/chrono.md) - Date and time handling
 - [Dependencies Template](dependencies/template.md) - Template for documenting dependencies
 
 ### Templates

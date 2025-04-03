@@ -22,13 +22,27 @@ This directory contains specifications for external dependencies used in the Mar
 - [serde](serde.md) - Serialization framework
 - [chrono](chrono.md) - Date and time handling
 
+## Async Runtime
+
+- tokio - Async runtime
+- tokio-stream - Stream utilities for tokio
+- tokio-util - Additional utilities for tokio
+- async-trait - Trait support for async methods
+
+## Content Processing
+
+- gray_matter - Frontmatter parsing
+- base64 - Base64 encoding/decoding
+- mime - MIME type handling
+- mime_guess - MIME type detection from file extensions
+
 ## Future Dependency Documentation Needs
 
 The following dependencies should be documented:
 
 1. **dav-server-opendalfs** - WebDAV server integration with OpenDAL
 2. **gray_matter** - Frontmatter parsing
-3. **tokio** - Async runtime
+3. **tokio ecosystem** - Async runtime and utilities
 4. **thiserror/anyhow** - Error handling
 
 ## Templates
@@ -46,6 +60,12 @@ The following dependencies should be documented:
 | serde | DRAFT | 1.0.219 | Serialization | MEDIUM |
 | serde_json | DRAFT | 1.0.140 | JSON handling | MEDIUM |
 | chrono | DRAFT | 0.4.40 | Date and time | MEDIUM |
+| tokio | PENDING | 1.44.1 | Async runtime | MEDIUM |
+| tokio-stream | PENDING | 0.1.17 | Async stream utilities | LOW |
+| tokio-util | PENDING | 0.7.14 | Async utilities | LOW |
+| async-trait | PENDING | 0.1.88 | Async trait support | LOW |
+| gray_matter | PENDING | 0.2.8 | Frontmatter parsing | HIGH |
+| base64 | PENDING | 0.22.1 | Encoding/decoding | LOW |
+| mime | PENDING | 0.3.17 | MIME type handling | LOW |
+| mime_guess | PENDING | 2.0.5 | MIME type detection | LOW |
 | dav-server-opendalfs | PENDING | - | WebDAV server | HIGH |
-| gray_matter | PENDING | - | Frontmatter parsing | MEDIUM |
-| tokio | PENDING | 1.36.0 | Async runtime | LOW |
