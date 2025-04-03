@@ -4,7 +4,7 @@
 - Begin by reading key context files in this order:
   * README.md for project overview
   * Root Cargo.toml to understand project organization and dependencies
-  * spec/spec.md if it exists for domain context
+  * spec/index.md if it exists for domain context
 - Only explore deeper when specific problems require it
 - When deeper exploration is needed, prioritize:
   * Relevant spec files
@@ -30,15 +30,20 @@
     lib.rs        # Re-exports from api.rs
 
 ## 3. Specs Management
+
 - Create and maintain a `spec` folder with the following structure:
-  * `spec/spec.md` - Project overview and index to other specs
-  * `spec/crates/` - Directory for all crate-specific specs
+  * `spec/index.md` - Project overview and index to other specs
+  * `spec/crates/` - Directory for internal crate specifications only
   * `spec/domain/` - Directory for domain concept specs
   * `spec/handoffs/` - Directory for work-in-progress handoffs
-- For every crate (both internal and external):
+  * `spec/dependencies/` - Directory for external dependency documentation (when needed)
+- For internal crates:
   * Create a dedicated spec file in `spec/crates/{crate_name}.md`
   * Document purpose, responsibilities, key interfaces, and usage patterns
-  * For external crates, document version-specific features and limitations
+- For external dependencies:
+  * Only document dependencies that require special configuration or usage patterns
+  * Use a minimal approach focusing on project-specific usage
+  * Consider a single `dependencies.md` file for simpler projects rather than per-dependency files
 - Keep specs concise and interconnected with clear navigation links
 - For data structures, reference the actual code file if it's self-documenting
 - Specs should capture insights that would be difficult to regain from reading code
@@ -144,7 +149,7 @@
   * Read only the minimal set of files needed to understand the project basics:
     - README.md (for project overview)
     - Root Cargo.toml (for project structure)
-    - spec/spec.md (if available, for domain context)
+    - spec/index.md (if available, for domain context)
   * After reading these initial files, reach back to clarify next steps
   * Explicitly ask what to focus on next:
     - "Would you like me to focus on improving specifications?"
@@ -157,7 +162,7 @@
 ## 13. Handoff Process
 
 - Maintain handoff files in a dedicated `spec/handoffs/` directory
-- In `spec/spec.md`, include a "Current Handoffs" section listing active handoff files:
+- In `spec/index.md`, include a "Current Handoffs" section listing active handoff files:
   Current Handoffs
 
   [User Authentication](handoffs/user_auth.md) - Basic login flow implemented
@@ -175,7 +180,7 @@
   * Any blockers or questions that need resolution
 - Completely rewrite each handoff file after significant changes
 - At the beginning of a session:
-  * Reference the handoff list from `spec/spec.md` without reading individual handoff files
+  * Reference the handoff list from `spec/index.md` without reading individual handoff files
   * Ask if any specific handoff should be read
   * Only read the requested handoff file(s)
   * Wait for explicit instructions before taking action, even after reading handoffs
@@ -222,3 +227,98 @@
   4. Reference this spec when using the dependency in code
 - Always verify dependencies have been correctly added to Cargo.toml files
 - Use `.workspace = true` syntax for all workspace dependencies
+
+## 16. Documentation Conciseness
+
+- Focus on essential information that would be difficult to deduce from code
+- For dependency documentation, include only:
+  * Current version
+  * Specific features needed by our project
+  * Key usage patterns relevant to our code
+  * Common pitfalls to avoid
+- Avoid documenting standard usage patterns that are well-covered in the dependency's own documentation
+- Prefer concrete examples over abstract descriptions
+- If documentation exceeds 100 lines, consider if it can be condensed
+
+## 17. Dependency Addition Workflow
+
+- Use a simplified process for adding minor dependencies:
+  1. Add to root Cargo.toml with .workspace = true reference
+  2. Document only if the dependency requires non-obvious configuration
+  3. Update dependencies/index.md with a one-line description
+- For major dependencies that form core infrastructure:
+  1. Follow the comprehensive documentation process
+  2. Create a dedicated spec file with usage examples
+- Consider batching dependency additions when possible
+- Use a shared template for recording version decisions:
+```
+// Example format
+[dependency-name] = "x.y.z" // Selected for: reason
+```
+
+## 18. Revised Handoff Process
+
+- Create handoffs only for significant work that spans multiple sessions
+- For routine tasks (like adding standard dependencies), use commit messages instead
+- Consolidate related changes into a single handoff document
+- Keep handoffs under 100 lines with focus on:
+  * What changed
+  * Why it changed
+  * Next specific action items
+- Use bullet points rather than paragraphs when possible
+- For file organization changes, focus on documenting the new structure rather than the transition process
+
+## 19. Implementation vs. Documentation Balance
+
+- Documentation should support implementation, not be a goal in itself
+- When implementing a clear, well-understood feature:
+  * Create minimal documentation first
+  * Implement the feature
+  * Enhance documentation based on implementation insights
+- Focus documentation efforts on areas with:
+  * Complex domain concepts
+  * Non-obvious architectural decisions
+  * Interfaces between components
+- Use code comments for implementation details rather than external documentation
+- Consider code "self-documenting" when it follows standard Rust patterns
+
+## 20. Change Batching
+
+- Group related changes in a single commit when they serve a unified purpose
+- Examples of changes that should be batched:
+  * Adding related dependencies (e.g., tokio ecosystem)
+  * Reorganizing multiple related files
+  * Implementing a small feature with tests
+- Create separate commits for:
+  * Documentation changes vs. code changes
+  * Core feature implementation vs. refactoring
+  * Different logical components
+- Use conventional commit prefixes to clarify the nature of batched changes
+  * `feat(scope): add multiple related features`
+  * `refactor(scope): reorganize related components`
+
+## 16. Documentation Templates (New Section)
+
+- Templates are optional and should only be used when they add value
+- For larger projects with many similar documents, templates can provide consistency
+- For smaller projects, templates may add unnecessary overhead
+- When used, templates should be minimal and focus on structure rather than content
+- Instead of full template files, consider using a checklist of required sections in the guidelines
+- Template content should never be included in the final document if not relevant
+
+## 17. Document Versioning (New Section)
+
+- Git history provides adequate tracking of document changes
+- Do not include "Last Updated" timestamps in specification documents
+- Exception: Handoff documents should include a timestamp to clearly indicate recency
+- Instead of timestamps in specs, focus on indicating document status:
+  * [DRAFT], [REVIEW], [STABLE], [IMPLEMENTED]
+- Use Git commit messages to document significant changes to specifications
+
+## 18. Index Management (New Section)
+
+- Each subdirectory should have its own `index.md` file only if it contains more than 5 documents
+- The main `spec/index.md` should include links to all key documents organized by category
+- Subdirectory indices should be minimal and primarily for navigation
+- Avoid duplicating content between the main index and subdirectory indices
+- If a subdirectory uses an index, individual documents should focus on their specific topic without restating the overview
