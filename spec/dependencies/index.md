@@ -7,16 +7,16 @@ This directory contains specifications for external dependencies used in the Mar
 ## Storage and Database
 
 - [OpenDAL](opendal.md) - Storage abstraction library
+- [SQLx](sqlx.md) - Database interaction
 
 ## Future Dependency Documentation Needs
 
 The following dependencies should be documented:
 
 1. **dav-server-opendalfs** - WebDAV server integration with OpenDAL
-2. **sqlx** - Database interaction
-3. **gray_matter** - Frontmatter parsing
-4. **tokio** - Async runtime
-5. **thiserror/anyhow** - Error handling
+2. **gray_matter** - Frontmatter parsing
+3. **tokio** - Async runtime
+4. **thiserror/anyhow** - Error handling
 
 ## Templates
 
@@ -26,9 +26,9 @@ The following dependencies should be documented:
 
 | Dependency | Status | Version | Usage | Documentation Priority |
 |------------|--------|---------|-------|------------------------|
-| OpenDAL | DRAFT | 0.43.0 | S3 storage abstraction | HIGH |
+| OpenDAL | DRAFT | 0.52.0 | S3 storage abstraction | HIGH |
+| SQLx | DRAFT | 0.8.3 | Database operations | HIGH |
 | dav-server-opendalfs | PENDING | - | WebDAV server | HIGH |
-| sqlx | PENDING | - | Database operations | MEDIUM |
 | gray_matter | PENDING | - | Frontmatter parsing | MEDIUM |
-| tokio | PENDING | - | Async runtime | LOW |
+| tokio | PENDING | 1.36.0 | Async runtime | LOW |
 | serde | PENDING | - | Serialization | LOW |
