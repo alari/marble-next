@@ -26,6 +26,10 @@ tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros"] }
 # Configuration
 dotenv = "0.15.0"
 
+# Logging and instrumentation
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"

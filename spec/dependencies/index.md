@@ -13,6 +13,10 @@ This directory contains specifications for external dependencies used in the Mar
 
 - [dotenv](dotenv.md) - Environment variable loading from .env files
 
+## Logging and Instrumentation
+
+- [tracing](tracing.md) - Structured logging and instrumentation
+
 ## Future Dependency Documentation Needs
 
 The following dependencies should be documented:
@@ -33,6 +37,7 @@ The following dependencies should be documented:
 | OpenDAL | DRAFT | 0.52.0 | S3 storage abstraction | HIGH |
 | SQLx | DRAFT | 0.8.3 | Database operations | HIGH |
 | dotenv | DRAFT | 0.15.0 | Configuration management | MEDIUM |
+| tracing | DRAFT | 0.1.41 | Logging and instrumentation | MEDIUM |
 | dav-server-opendalfs | PENDING | - | WebDAV server | HIGH |
 | gray_matter | PENDING | - | Frontmatter parsing | MEDIUM |
 | tokio | PENDING | 1.36.0 | Async runtime | LOW |
