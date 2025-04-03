@@ -1,5 +1,7 @@
 # Marble Specification
 
+**Last Updated:** 2025-04-03
+
 ## Project Overview
 
 Marble is a multi-tenant notes and knowledge management platform with publishing capabilities. This project is a rewrite of an existing implementation, aimed at improving the architecture and functionality.
@@ -68,20 +70,54 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
 ## Component Index
 
 ### Domain Concepts
-- [Architecture Diagram](domain/architecture_diagram.md)
-- [Crate Dependencies](domain/crate_dependencies.md)
-- [Storage Architecture](domain/storage_architecture.md)
-- [Database Schema](domain/database_schema.md)
-- [Write Side](domain/write_side.md)
-- [Read Side](domain/read_side.md)
+- [Glossary](domain/glossary.md) - Definitions of key terms and concepts
+- [Architecture Diagram](domain/architecture_diagram.md) - Visual overview of system architecture
+- [Crate Dependencies](domain/crate_dependencies.md) - Relationship between crates
+- [Storage Architecture](domain/storage_architecture.md) - Content storage design
+- [Database Schema](domain/database_schema.md) - PostgreSQL schema specification
+- [Write Side](domain/write_side.md) - Content creation and management process
+- [Read Side](domain/read_side.md) - Content publishing process
 
 ### Crate Specifications
-- [Marble Core](crates/marble-core.md)
-- [Marble Database](crates/marble_db.md)
-- [Marble Storage](crates/marble_storage.md)
-- [Marble Write Processor](crates/marble_write_processor.md)
-- [Marble Read Processor](crates/marble_read_processor.md)
-- [Marble WebDAV Server](crates/marble_webdav.md)
+- [Marble Core](crates/marble-core.md) - Shared types and utilities
+- [Marble Database](crates/marble_db.md) - Database operations
+- [Marble Storage](crates/marble_storage.md) - Storage abstraction
+- [Marble Write Processor](crates/marble_write_processor.md) - Content analysis
+- [Marble Read Processor](crates/marble_read_processor.md) - Content transformation
+- [Marble WebDAV Server](crates/marble_webdav.md) - WebDAV interface
+
+### External Dependencies
+- [OpenDAL](dependencies/opendal.md) - Storage abstraction library
+- [Dependencies Template](dependencies/template.md) - Template for documenting dependencies
+
+### Templates
+- [Crate Specification Template](crates/template.md) - Template for new crate specs
+- [Domain Concept Template](domain/template.md) - Template for new domain concepts
+- [Handoff Template](handoffs/template.md) - Template for work handoffs
+
+## Documentation Standards
+
+### Status Indicators
+Each specification document should include a status indicator:
+- **[DRAFT]** - Initial documentation, may be incomplete or change significantly
+- **[REVIEW]** - Ready for review, seeking feedback
+- **[STABLE]** - Approved specification, only minor changes expected
+- **[IMPLEMENTED]** - Specification has been implemented in code
+
+### File Naming Conventions
+- All filenames should use underscores instead of hyphens (e.g., `marble_core.md` not `marble-core.md`)
+- Template files should be named `template.md` in each directory
+- Domain concept files should be descriptive of the concept (e.g., `authentication.md`)
+
+### Cross-References
+- All specs should include a "Related Specifications" section
+- Links should use relative paths (e.g., `../domain/concept.md`)
+- Link text should include the document title
+
+### Diagrams
+- Use Mermaid diagrams for visualizations
+- Include diagrams directly in Markdown using triple-backtick syntax
+- Provide a text description of the diagram for accessibility
 
 ## Data Flow
 
@@ -129,3 +165,25 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
    - Develop comprehensive unit and integration tests
    - Validate against Obsidian compatibility requirements
    - Ensure performance with large vaults (1000+ notes)
+
+## Spec Improvement Roadmap
+
+1. **Documentation Completeness**:
+   - Create spec files for all external dependencies
+   - Update crate specs with more detailed API interfaces
+   - Add more visual diagrams to clarify architecture
+
+2. **Standardization**:
+   - Standardize all filename conventions
+   - Add status indicators to all spec files
+   - Ensure consistent formatting across all documents
+
+3. **Traceability**:
+   - Improve cross-references between related specifications
+   - Add requirement IDs for key functionality
+   - Link requirements to implementation components
+
+4. **Validation**:
+   - Review and validate all spec documents
+   - Ensure alignment with actual implementation
+   - Identify and resolve inconsistencies between specs
