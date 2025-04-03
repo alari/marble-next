@@ -30,21 +30,25 @@
     lib.rs        # Re-exports from api.rs
 
 ## 3. Specs Management
-- Create and maintain a `spec` folder in the root of the project
-- Maintain a central `spec/spec.md` with project overview and index to other specs
-- Create separate spec files for each crate and domain concept
-- For every crate you generate or learn important details about, create a dedicated spec file named after the crate
+- Create and maintain a `spec` folder with the following structure:
+  * `spec/spec.md` - Project overview and index to other specs
+  * `spec/crates/` - Directory for all crate-specific specs
+  * `spec/domain/` - Directory for domain concept specs
+  * `spec/handoffs/` - Directory for work-in-progress handoffs
+- For every crate (both internal and external):
+  * Create a dedicated spec file in `spec/crates/{crate_name}.md`
+  * Document purpose, responsibilities, key interfaces, and usage patterns
+  * For external crates, document version-specific features and limitations
 - Keep specs concise and interconnected with clear navigation links
 - For data structures, reference the actual code file if it's self-documenting
 - Specs should capture insights that would be difficult to regain from reading code
 - Use Mermaid diagrams when they clarify architecture or workflows
-- Update specs whenever gaining insights that would be challenging to reconstruct later
-- After completing significant work (feature acceptance, module decomposition, responsibility changes):
+- Update affected spec files after EACH iteration of development
+- After completing significant work:
   * Review all affected specs for soundness and validity
   * Remove obsolete information
   * Split overly long sections into separate files
   * Ensure specs are structured logically and contain sufficient context
-  * Verify that individual spec files remain concise and focused
 - Prepare a commit after any significant reorganization of specs
 - Treat specs as the project's memory - prioritize their quality and accuracy
 
@@ -205,3 +209,16 @@
   * Confirm they're added to the correct Cargo.toml location
   * Use .workspace = true syntax for workspace dependencies
 - Remember: Many small working steps are better than one large implementation that might not compile
+
+## 15. Dependency Management for Unknown Crates
+- When encountering an unfamiliar dependency or version:
+  1. First check `spec/crates/{dependency_name}.md` for existing documentation
+  2. If no documentation exists, ask the user for information about:
+     * The dependency's purpose and core functionality
+     * Preferred usage patterns
+     * Any specific version constraints or features to use
+     * Alternatives considered and why this dependency was chosen
+  3. Document this information in `spec/crates/{dependency_name}.md`
+  4. Reference this spec when using the dependency in code
+- Always verify dependencies have been correctly added to Cargo.toml files
+- Use `.workspace = true` syntax for all workspace dependencies
