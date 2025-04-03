@@ -23,6 +23,9 @@ sqlx = { version = "0.8.3", features = ["runtime-tokio", "tls-rustls", "postgres
 # Async runtime
 tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros"] }
 
+# Configuration
+dotenv = "0.15.0"
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"

@@ -9,6 +9,10 @@ This directory contains specifications for external dependencies used in the Mar
 - [OpenDAL](opendal.md) - Storage abstraction library
 - [SQLx](sqlx.md) - Database interaction
 
+## Configuration and Environment
+
+- [dotenv](dotenv.md) - Environment variable loading from .env files
+
 ## Future Dependency Documentation Needs
 
 The following dependencies should be documented:
@@ -28,6 +32,7 @@ The following dependencies should be documented:
 |------------|--------|---------|-------|------------------------|
 | OpenDAL | DRAFT | 0.52.0 | S3 storage abstraction | HIGH |
 | SQLx | DRAFT | 0.8.3 | Database operations | HIGH |
+| dotenv | DRAFT | 0.15.0 | Configuration management | MEDIUM |
 | dav-server-opendalfs | PENDING | - | WebDAV server | HIGH |
 | gray_matter | PENDING | - | Frontmatter parsing | MEDIUM |
 | tokio | PENDING | 1.36.0 | Async runtime | LOW |
