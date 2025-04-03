@@ -17,6 +17,11 @@ This directory contains specifications for external dependencies used in the Mar
 
 - [tracing](tracing.md) - Structured logging and instrumentation
 
+## Serialization and Data Handling
+
+- [serde](serde.md) - Serialization framework
+- [chrono](chrono.md) - Date and time handling
+
 ## Future Dependency Documentation Needs
 
 The following dependencies should be documented:
@@ -38,7 +43,9 @@ The following dependencies should be documented:
 | SQLx | DRAFT | 0.8.3 | Database operations | HIGH |
 | dotenv | DRAFT | 0.15.0 | Configuration management | MEDIUM |
 | tracing | DRAFT | 0.1.41 | Logging and instrumentation | MEDIUM |
+| serde | DRAFT | 1.0.219 | Serialization | MEDIUM |
+| serde_json | DRAFT | 1.0.140 | JSON handling | MEDIUM |
+| chrono | DRAFT | 0.4.40 | Date and time | MEDIUM |
 | dav-server-opendalfs | PENDING | - | WebDAV server | HIGH |
 | gray_matter | PENDING | - | Frontmatter parsing | MEDIUM |
 | tokio | PENDING | 1.36.0 | Async runtime | LOW |
-| serde | PENDING | - | Serialization | LOW |
