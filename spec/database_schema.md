@@ -208,60 +208,35 @@ CREATE TABLE aliases (
 CREATE INDEX idx_aliases_lookup ON aliases(alias);
 ```
 
-#### `references`
-Links between files (Obsidian references).
+#### `document_links`
+Links and embeds between files (combines Obsidian references and embeds into a single table).
 
-| Column          | Type           | Description                                |
-|-----------------|----------------|--------------------------------------------|
-| id              | SERIAL         | Primary key                                |
-| source_file_id  | INTEGER        | Foreign key to source file                 |
-| target_path     | VARCHAR(1024)  | Referenced path                            |
-| display_text    | VARCHAR(1024)  | Text displayed for the reference           |
-| original_syntax | VARCHAR(1024)  | Original Obsidian reference syntax         |
-| target_file_id  | INTEGER        | Foreign key to target file (if resolved)   |
-| resolved        | BOOLEAN        | Whether the reference has been resolved    |
+| Column         | Type           | Description                                |
+|----------------|----------------|--------------------------------------------|
+| id             | SERIAL         | Primary key                                |
+| source_file_id | INTEGER        | Foreign key to source file                 |
+| target_name    | VARCHAR(1024)  | Referenced note title/name                 |
+| display_text   | VARCHAR(1024)  | Text displayed for the reference           |
+| is_embed       | BOOLEAN        | true for embeds, false for references      |
+| target_file_id | INTEGER        | Foreign key to target file (NULL if unresolved) |
+| position       | INTEGER        | Position in document for ordering          |
+| fragment       | VARCHAR(255)   | Section or block fragment if any           |
 
 ```sql
-CREATE TABLE references (
+CREATE TABLE document_links (
     id SERIAL PRIMARY KEY,
     source_file_id INTEGER NOT NULL REFERENCES files(id),
-    target_path VARCHAR(1024) NOT NULL,
+    target_name VARCHAR(1024) NOT NULL,
     display_text VARCHAR(1024),
-    original_syntax VARCHAR(1024) NOT NULL,
+    is_embed BOOLEAN NOT NULL,
     target_file_id INTEGER REFERENCES files(id),
-    resolved BOOLEAN NOT NULL DEFAULT FALSE
+    position INTEGER NOT NULL,
+    fragment VARCHAR(255)
 );
 
-CREATE INDEX idx_references_source ON references(source_file_id);
-CREATE INDEX idx_references_target ON references(target_file_id);
-```
-
-#### `embeds`
-Embeds between files (Obsidian embeds).
-
-| Column          | Type           | Description                                |
-|-----------------|----------------|--------------------------------------------|
-| id              | SERIAL         | Primary key                                |
-| source_file_id  | INTEGER        | Foreign key to source file                 |
-| target_path     | VARCHAR(1024)  | Embedded path                              |
-| fragment        | VARCHAR(255)   | Section fragment if any                    |
-| original_syntax | VARCHAR(1024)  | Original Obsidian embed syntax             |
-| target_file_id  | INTEGER        | Foreign key to target file (if resolved)   |
-| resolved        | BOOLEAN        | Whether the embed has been resolved        |
-
-```sql
-CREATE TABLE embeds (
-    id SERIAL PRIMARY KEY,
-    source_file_id INTEGER NOT NULL REFERENCES files(id),
-    target_path VARCHAR(1024) NOT NULL,
-    fragment VARCHAR(255),
-    original_syntax VARCHAR(1024) NOT NULL,
-    target_file_id INTEGER REFERENCES files(id),
-    resolved BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-CREATE INDEX idx_embeds_source ON embeds(source_file_id);
-CREATE INDEX idx_embeds_target ON embeds(target_file_id);
+CREATE INDEX idx_links_source ON document_links(source_file_id, position);
+CREATE INDEX idx_links_target ON document_links(target_file_id);
+CREATE INDEX idx_links_unresolved ON document_links(target_name) WHERE target_file_id IS NULL;
 ```
 
 ### Processing Tables
@@ -404,3 +379,7 @@ Database migrations will be managed using SQLx migrations. Initial schema creati
 7. **Error Handling**: How should we track and manage processing errors? Should errors be stored directly in the queue table or in a separate error log?
 
 8. **Concurrency**: How should we handle concurrent updates to the same files or related metadata?
+
+9. **Link Navigation**: How should we optimize queries for finding next/previous published notes in a navigation context?
+
+10. **Recursive Embeds**: What is the most efficient way to query and display recursively embedded content while preserving order?

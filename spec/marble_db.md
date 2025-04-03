@@ -81,25 +81,17 @@ The `marble-db` crate manages the PostgreSQL database schema and operations for 
   - `layout`: Layout type
   - `other_data`: JSONB for additional fields
 
-#### `references`
-- Links between files (Obsidian references)
+#### `document_links`
+- Links and embeds between files (combines Obsidian references and embeds)
 - Fields:
   - `id`: Primary key
   - `source_file_id`: Foreign key to source file
-  - `target_path`: Referenced path (may be resolved via aliases)
+  - `target_name`: Referenced note title/name
   - `display_text`: Text displayed for the reference
-  - `original_syntax`: Original Obsidian reference syntax
-  - `target_file_id`: Foreign key to target file (if resolved)
-
-#### `embeds`
-- Embeds between files (Obsidian embeds)
-- Fields:
-  - `id`: Primary key
-  - `source_file_id`: Foreign key to source file
-  - `target_path`: Embedded path
-  - `fragment`: Section fragment if any
-  - `original_syntax`: Original Obsidian embed syntax
-  - `target_file_id`: Foreign key to target file (if resolved)
+  - `is_embed`: Boolean (true for embeds, false for references)
+  - `target_file_id`: Foreign key to target file (NULL if unresolved)
+  - `position`: Position in document for ordering
+  - `fragment`: Section or block fragment if any
 
 ### Processing Tables
 
@@ -157,8 +149,11 @@ impl MarbleDb {
     // Content analysis
     async fn get_frontmatter(&self, file_id: i32) -> Result<Frontmatter, DbError>;
     async fn update_frontmatter(&self, file_id: i32, frontmatter: &Frontmatter) -> Result<(), DbError>;
-    async fn get_file_references(&self, file_id: i32) -> Result<Vec<Reference>, DbError>;
-    async fn get_referencing_files(&self, file_id: i32) -> Result<Vec<Reference>, DbError>;
+    async fn get_document_links(&self, file_id: i32, include_embeds: bool) -> Result<Vec<DocumentLink>, DbError>;
+    async fn get_referencing_files(&self, file_id: i32, include_embeds: bool) -> Result<Vec<DocumentLink>, DbError>;
+    async fn get_next_published_link(&self, source_file_id: i32, current_position: i32) -> Result<Option<DocumentLink>, DbError>;
+    async fn get_prev_published_link(&self, source_file_id: i32, current_position: i32) -> Result<Option<DocumentLink>, DbError>;
+    async fn get_recursive_embeds(&self, file_id: i32) -> Result<Vec<DocumentLink>, DbError>;
     
     // Processing queue
     async fn enqueue_file(&self, file_id: i32, operation: OperationType) -> Result<(), DbError>;
