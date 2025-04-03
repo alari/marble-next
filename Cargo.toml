@@ -33,7 +33,10 @@ sqlx = { version = "0.8.3", features = [
 ] }
 
 # Async runtime
-tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1.44.1", features = ["rt-multi-thread", "macros", "fs", "io-util", "sync", "time"] }
+tokio-stream = "0.1.17"
+tokio-util = { version = "0.7.14", features = ["codec", "io"] }
+async-trait = "0.1.88"
 
 # Configuration
 dotenv = "0.15.0"
@@ -48,6 +51,12 @@ serde_json = "1.0.140"
 
 # Date and time
 chrono = { version = "0.4.40", features = ["serde"] }
+
+# Content handling
+gray_matter = "0.2.8"
+base64 = "0.22.1"
+mime = "0.3.17"
+mime_guess = "2.0.5"
 
 [workspace.package]
 version = "0.1.0"
