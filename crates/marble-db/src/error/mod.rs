@@ -18,4 +18,14 @@ pub enum Error {
     /// Failed to execute a database query
     #[error("Failed to execute database query: {0}")]
     QueryFailed(#[source] sqlx::Error),
+    
+    /// Failed to convert database row
+    #[error("Failed to convert database row: {0}")]
+    RowConversionFailed(#[source] sqlx::Error),
+}
+
+impl From<sqlx::Error> for Error {
+    fn from(error: sqlx::Error) -> Self {
+        Error::QueryFailed(error)
+    }
 }

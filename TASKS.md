@@ -135,9 +135,10 @@ The implementation will follow these steps, with each component being individual
    - [DONE] Create testing infrastructure with PostgreSQL 17 Docker environment
    - [DONE] Implement core PostgreSQL schema (users, folders, files)
    - [DONE] Create Rust models for database tables
+   - [DONE] Create SQLx repository patterns with CRUD operations
    - [WIP] Implement remaining schema tables (versions, content analysis, processing)
-   - [WIP] Create SQLx operations for common queries
-   - Build comprehensive tests using the test database
+   - Build higher-level service layer integrating repositories
+   - Add comprehensive integration tests
    - This provides the foundation for all other components
 
 2. **WebDAV Server Framework (bin/marble-webdav)**

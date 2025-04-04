@@ -71,6 +71,7 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
 - [Database Testing](handoffs/database_testing.md) - Set up PostgreSQL 17 Docker environment for testing
 - [Database Schema Implementation](handoffs/database_schema_implementation.md) - Implemented core schema with migrations
 - [Database Models Implementation](handoffs/database_models_implementation.md) - Created Rust models for database tables
+- [Database Repositories Implementation](handoffs/database_repositories_implementation.md) - Implemented repository patterns and CRUD operations
 
 ## Component Index
 
