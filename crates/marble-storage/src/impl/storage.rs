@@ -10,6 +10,7 @@ use crate::api::MarbleStorage;
 use crate::backends::hash::create_hash_storage;
 use crate::backends::raw::RawStorageBackend;
 use crate::backends::user::uuid_to_db_id;
+use crate::backends::opendal_adapter::create_raw_operator;
 use crate::config::StorageConfig;
 use crate::error::{StorageError, StorageResult};
 use crate::services::hasher::ContentHasher;
@@ -107,18 +108,19 @@ impl MarbleStorage for MarbleStorageImpl {
         let db_user_id = uuid_to_db_id(db_pool, user_id).await?;
         
         // Create the raw storage backend
-        let _backend = Arc::new(RawStorageBackend::new(
+        let backend = Arc::new(RawStorageBackend::new(
             db_user_id,
             db_pool.clone(),
             self.content_hasher.clone(),
         ));
         
-        // Create an OpenDAL operator from the backend
-        // This is where we would use the OpenDAL adapter, but for now
-        // we'll return an error since the adapter is not yet fully implemented
-        Err(StorageError::Configuration(
-            "OpenDAL adapter for raw storage is not yet fully implemented".to_string(),
-        ))
+        // Create an OpenDAL operator from the backend using our adapter
+        match create_raw_operator(backend) {
+            Ok(operator) => Ok(operator),
+            Err(e) => Err(StorageError::Storage(format!(
+                "Failed to create OpenDAL operator: {}", e
+            ))),
+        }
     }
     
     /// Get the hash-based storage operator
@@ -257,9 +259,12 @@ mod tests {
         
         // Try to get raw storage
         let result = storage_impl.raw_storage(user_uuid).await;
-        assert!(result.is_err(), "Raw storage should not be fully implemented yet");
-        assert!(result.unwrap_err().to_string().contains("OpenDAL adapter"), 
-                "Error should be about OpenDAL adapter");
+        
+        // Currently we expect an error because our create_raw_operator returns an Unsupported error
+        // Once fully implemented, this would be a passing test
+        assert!(result.is_err(), "Raw storage operator creation should return an error until fully implemented");
+        assert!(result.unwrap_err().to_string().contains("Failed to create OpenDAL operator"), 
+                "Error should be about OpenDAL operator creation");
         
         // Clean up
         let _ = sqlx::query("DELETE FROM users WHERE id = $1")

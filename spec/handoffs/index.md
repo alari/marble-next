@@ -20,6 +20,7 @@ This document provides an index to all work handoffs in the Marble project.
 ## Storage Implementation
 
 - [Marble Storage Implementation](marble_storage_implementation.md) - Storage architecture implementation
+- [OpenDAL Adapter Implementation](opendal_adapter_implementation.md) - OpenDAL integration for storage
 
 ## Templates
 
