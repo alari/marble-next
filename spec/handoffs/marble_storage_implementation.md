@@ -3,7 +3,7 @@
 **Last Updated: 2025-04-04**
 
 ## Current Status
-Initial planning phase for the marble-storage crate implementation. The crate currently contains only placeholder code and needs to be implemented based on the specification.
+Phase 1 of the implementation plan is complete. The crate now has OpenDAL dependencies, error handling, configuration structure, and API interfaces defined.
 
 ## Implementation Plan
 
@@ -52,9 +52,9 @@ We will focus exclusively on the write side storage implementation in this phase
 - The read side implementation (with path-based tenant isolation) is a separate future project
 
 ## Next Steps
-1. Begin Phase 1 by updating the Cargo.toml to include necessary dependencies
-2. Create the basic structure for the error handling module
-3. Implement configuration module for storage backends
+1. Begin Phase 2 by implementing the content-addressable hashed storage backend
+2. Create an OpenDAL operator for the hash-based storage
+3. Add unit tests for the hash storage implementation
 
 ## References
 - [Storage Architecture](../domain/storage_architecture.md)
