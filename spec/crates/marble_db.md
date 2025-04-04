@@ -236,9 +236,52 @@ The configuration can be loaded from environment variables using the `from_env()
 - **Processor**: Queries for changed files and their dependencies
 - **WebDAV Server**: Uses database for authentication and path resolution
 
+## Testing Approach
+
+The `marble-db` crate uses a comprehensive testing strategy with a dedicated PostgreSQL 17 database:
+
+### Test Environment
+
+- Docker Compose-based PostgreSQL 17 instance for testing
+- Isolated test database on port 5433 (separate from development)
+- SQL query logging for debugging and performance analysis
+- Automated setup script for test environment initialization
+
+### Testing Utilities
+
+```rust
+// Planned testing utilities
+mod testing {
+    // Create a test database configuration
+    pub fn test_config() -> DatabaseConfig { ... }
+    
+    // Create and initialize a test database connection
+    pub async fn create_test_db() -> Database { ... }
+    
+    // Create standard test data
+    pub async fn create_test_user(db: &Database) -> i64 { ... }
+    
+    // Run a test function with a database connection
+    pub fn with_db<F, Fut, R>(test_fn: F) -> R { ... }
+}
+```
+
+### Test Types
+
+1. **Schema Tests**: Verify database structure matches expectations
+2. **Query Tests**: Confirm SQL queries function correctly
+3. **API Tests**: Test the public DatabaseApi interface
+4. **Integration Tests**: End-to-end tests of database operations
+5. **Performance Tests**: Benchmark critical database operations
+
+### Snapshot Testing
+
+Database schema changes will be verified using snapshot testing to ensure schema modifications are intentional and documented.
+
 ## Future Considerations
 
 - Optimize indices for common query patterns
 - Consider partitioning for multi-tenant scalability
 - Implement efficient batch operations for bulk updates
 - Design migration strategy for schema evolution
+- Benchmark scaling with large dataset volumes

@@ -68,6 +68,7 @@ Marble is built on a hybrid storage architecture using S3 for content and Postgr
 - [Database Schema](handoffs/database_schema.md) - Database schema specification refinement in progress
 - [Dependencies Update](handoffs/dependencies_update.md) - Added key dependencies for core functionality
 - [Marble-DB Implementation](handoffs/marble_db_implementation.md) - Added SQLx support with migration capabilities
+- [Database Testing](handoffs/database_testing.md) - Set up PostgreSQL 17 Docker environment for testing
 
 ## Component Index
 
