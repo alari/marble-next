@@ -5,6 +5,8 @@
 pub use api::{MarbleStorage, MarbleStorageRef};
 pub use config::{FileSystemConfig, S3Config, StorageBackend, StorageConfig};
 pub use error::{StorageError, StorageResult};
+pub use impl::create_storage;
+pub use services::hasher::ContentHasher;
 
 // Public modules
 pub mod api;
@@ -12,9 +14,10 @@ pub mod config;
 pub mod error;
 pub mod hash;
 
-// To be implemented in subsequent phases
-// mod backends;
-// mod impl;
+// Internal modules
+mod backends;
+mod impl;
+mod services;
 
 /// Module version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
