@@ -1,17 +1,23 @@
-// This is a placeholder file for the marble-storage crate
-// Real implementation will be added later
+// marble-storage crate
+// Provides storage abstraction for Marble using OpenDAL
 
-/// Placeholder function
-pub fn placeholder() -> &'static str {
-    "marble-storage placeholder"
-}
+// Re-export the primary traits and types
+pub use api::{MarbleStorage, MarbleStorageRef};
+pub use config::{FileSystemConfig, S3Config, StorageBackend, StorageConfig};
+pub use error::{StorageError, StorageResult};
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// Public modules
+pub mod api;
+pub mod config;
+pub mod error;
+pub mod hash;
 
-    #[test]
-    fn test_placeholder() {
-        assert_eq!(placeholder(), "marble-storage placeholder");
-    }
-}
+// To be implemented in subsequent phases
+// mod backends;
+// mod impl;
+
+/// Module version
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+/// Module name
+pub const NAME: &str = env!("CARGO_PKG_NAME");

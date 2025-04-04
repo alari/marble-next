@@ -58,6 +58,10 @@ base64 = "0.22.1"
 mime = "0.3.17"
 mime_guess = "2.0.5"
 
+# Storage
+opendal = { version = "0.45.1", features = ["services-s3", "services-fs"] }
+blake2b_simd = "1.0.2"
+
 # Error handling
 thiserror = "1.0.58"
 
