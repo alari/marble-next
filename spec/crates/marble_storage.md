@@ -42,12 +42,35 @@ The `marble-storage` crate implements a hybrid storage architecture combining ob
    - Prefixes all paths with username for tenant isolation
    - References to embedded content use fragment anchors
 
+## User Identification
+
+Marble uses a dual approach to user identification:
+
+1. **Internal Database IDs (i32)**:
+   - Used as primary keys in the database
+   - Used for database relationships and foreign keys
+   - Used internally by repositories
+
+2. **UUIDs (Universally Unique Identifiers)**:
+   - Used for external-facing user identification
+   - Used in the `MarbleStorage` API
+   - Provides security by not exposing internal database IDs
+
+The system provides utilities to convert between these two ID types, ensuring proper tenant isolation while maintaining a clean external API.
+
+### Authentication
+- The `username` field is used for authentication in both write and read sides
+- The WebDAV interface uses username/password authentication
+- Passwords are stored as hashes in the `password_hash` field
+- Authentication happens before storage operations
+- Usernames are also used in path structures for processed content
+
 ## API Design
 
-### Current Implementation Focus
+### Current Implementation
 
 ```rust
-// Current implementation focuses on the write side
+// Main storage interface
 #[async_trait]
 pub trait MarbleStorage: Send + Sync + 'static {
     // Create a raw storage backend for a specific tenant
@@ -60,14 +83,24 @@ pub trait MarbleStorage: Send + Sync + 'static {
 // Single implementation that supports both filesystem and S3
 pub struct MarbleStorageImpl {
     config: StorageConfig,
+    db_pool: Option<Arc<PgPool>>,
     hash_operator: Operator,
     content_hasher: ContentHasher,
 }
 
-// Configuration supports both backends
-pub enum StorageBackend {
-    S3(S3Config),
-    FileSystem(FileSystemConfig),
+// Storage creation API
+pub async fn create_storage(config: StorageConfig) -> StorageResult<Arc<dyn MarbleStorage>>;
+pub async fn create_storage_with_db(
+    config: StorageConfig,
+    db_pool: Arc<PgPool>,
+) -> StorageResult<Arc<dyn MarbleStorage>>;
+
+// Raw storage backend
+pub struct RawStorageBackend {
+    user_id: i32,
+    db_pool: Arc<PgPool>,
+    file_repo: Arc<SqlxFileRepository>,
+    content_hasher: ContentHasher,
 }
 
 // Content hashing service
@@ -138,6 +171,36 @@ async fn exists(op: &Operator, path: &str) -> Result<bool> {
 }
 ```
 
+### Raw Storage Backend Operations
+
+The `RawStorageBackend` provides these core operations:
+
+```rust
+impl RawStorageBackend {
+    // Read a file from raw storage
+    pub async fn read_file(&self, path: &str) -> StorageResult<Vec<u8>>;
+    
+    // Write a file to raw storage
+    pub async fn write_file(
+        &self,
+        path: &str,
+        content: Vec<u8>,
+        content_type: &str,
+    ) -> StorageResult<()>;
+    
+    // Check if a file exists
+    pub async fn file_exists(&self, path: &str) -> StorageResult<bool>;
+    
+    // Delete a file
+    pub async fn delete_file(&self, path: &str) -> StorageResult<()>;
+    
+    // List files in a directory
+    pub async fn list_files(&self, dir_path: &str) -> StorageResult<Vec<String>>;
+}
+```
+
+These operations enforce tenant isolation through the user_id field and integrate with the database for metadata storage.
+
 ### Future API Additions (Read Side)
 
 ```rust
@@ -156,7 +219,8 @@ pub trait MarbleStorage {
 
 ### Raw Storage Paths
 - Raw paths match the original file structure: `/path/to/file.md`
-- Each tenant has their own isolated raw storage space
+- Each tenant has their own isolated raw storage space through database metadata
+- Physical content is stored in hash-based storage using content-addressable hash
 
 ### Processed Storage Paths
 - All processed paths are prefixed with username: `/{username}/...`
@@ -181,10 +245,20 @@ pub trait MarbleStorage {
 - Interfaces with `marble-webdav` for WebDAV operations
 - Provides backends for content processing pipeline
 - Supports user authentication verification
+- Integrates with marble-db for metadata storage and tenant isolation
+
+## Current Implementation Status
+
+- Content-addressable hash storage is fully implemented
+- `ContentHasher` service for content hashing and storage is complete
+- `RawStorageBackend` with database integration is implemented
+- User ID conversion between UUID and database ID is implemented
+- OpenDAL adapter for the `RawStorageBackend` is in progress
 
 ## Future Work
 
-- Define exact OpenDAL operator implementations
+- Complete OpenDAL adapter implementation
+- Implement the processed storage backend
 - Establish caching strategies
-- Determine persistence guarantees
-- Define error handling patterns
+- Implement garbage collection for unreferenced content
+- Add comprehensive testing for tenant isolation
