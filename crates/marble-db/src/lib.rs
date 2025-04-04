@@ -12,6 +12,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub mod api;
 pub mod config;
 
+#[cfg(test)]
+mod tests;
+
 pub use api::{Database, DatabaseApi};
 pub use config::DatabaseConfig;
 
@@ -55,7 +58,7 @@ pub async fn connect(config: DatabaseConfig) -> Result<Database> {
 }
 
 #[cfg(test)]
-mod tests {
+mod config_tests {
     use super::*;
 
     #[test]

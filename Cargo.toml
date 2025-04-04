@@ -33,7 +33,7 @@ sqlx = { version = "0.8.3", features = [
 ] }
 
 # Async runtime
-tokio = { version = "1.44.1", features = ["rt-multi-thread", "macros", "fs", "io-util", "sync", "time"] }
+tokio = { version = "1.44.1", features = ["rt-multi-thread", "macros", "fs", "io-util", "sync", "time", "test-util"] }
 tokio-stream = "0.1.17"
 tokio-util = { version = "0.7.14", features = ["codec", "io"] }
 async-trait = "0.1.88"

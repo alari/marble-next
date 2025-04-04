@@ -132,10 +132,11 @@ The implementation will follow these steps, with each component being individual
 
 1. **Database Schema (marble-db)**
    - [DONE] Set up SQLx with migration support
-   - [WIP] Create testing infrastructure with PostgreSQL 17 Docker environment
-   - Implement PostgreSQL schema for users, files, and metadata
+   - [DONE] Create testing infrastructure with PostgreSQL 17 Docker environment
+   - [DONE] Implement core PostgreSQL schema (users, folders, files)
+   - [WIP] Implement remaining schema tables (versions, content analysis, processing)
    - Create SQLx operations for common queries
-   - Build tests using the test database
+   - Build comprehensive tests using the test database
    - This provides the foundation for all other components
 
 2. **WebDAV Server Framework (bin/marble-webdav)**
