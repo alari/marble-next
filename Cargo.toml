@@ -67,6 +67,13 @@ tempfile = "3.10.1"
 # Error handling
 thiserror = "1.0.58"
 
+[workspace.dependencies]
+# Adding dependencies referenced with .workspace = true
+opendal = { version = "0.45.1", features = ["services-s3", "services-fs"] }
+blake2b_simd = "1.0.2"
+uuid = { version = "1.7.0", features = ["v4", "serde"] }
+tempfile = "3.10.1"
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
