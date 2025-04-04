@@ -149,10 +149,15 @@ The implementation will follow these steps, with each component being individual
    - This allows testing the WebDAV interface independently
 
 3. **Storage Implementation (marble-storage)**
-   - Implement S3 content storage with hash-based addressing
-   - Create OpenDAL backends that integrate with marble-db
-   - Build both raw and processed storage interfaces
-   - This connects the database to the content storage
+   - [TODO] Add OpenDAL with S3 support to dependencies
+   - [TODO] Define error handling strategy with `StorageError` type
+   - [TODO] Implement configuration system for storage backends
+   - [TODO] Create content-addressable hashed storage with `/.hash/{hash}` scheme
+   - [TODO] Implement tenant isolation through user_id in database metadata
+   - [TODO] Create OpenDAL backend integrated with marble-db for path-to-hash lookup
+   - [TODO] Develop comprehensive integration tests
+   - [TODO] Update documentation to match implementation
+   - Completion criteria: Working write-side storage with tests passing
 
 4. **Write Model Processor (marble-write-processor)**
    - Implement content analysis for new/updated files

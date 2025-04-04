@@ -17,6 +17,10 @@ This document provides an index to all work handoffs in the Marble project.
 
 - [Documentation Restructuring](documentation_restructuring.md) - **[IMPLEMENTED]** Documentation reorganization
 
+## Storage Implementation
+
+- [Marble Storage Implementation](marble_storage_implementation.md) - Storage architecture implementation
+
 ## Templates
 
 - [Handoff Template](template.md) - Template for work handoffs

@@ -16,19 +16,20 @@ The `marble-storage` crate provides storage abstraction for the Marble platform,
 
 The `marble-storage` crate implements a hybrid storage architecture combining object storage (S3) for content and a relational database (PostgreSQL) for metadata. It provides two primary storage backends through OpenDAL:
 
-1. **Raw Storage Backend**:
+1. **Raw Storage Backend**: *(Initial Implementation Focus)*
    - Read-write access to original user content
    - Content storage:
-     - File content stored in S3 with content-addressable (hash-based) approach
-     - Identical content shares the same storage object
+     - File content stored in S3 with content-addressable (hash-based) approach (`/.hash/{hash}`)
+     - Identical content shares the same storage object (deduplication)
    - Metadata storage:
      - File paths, hashes, and relationships stored in PostgreSQL
      - Tracks file versions, folder structure, and dependencies
+     - User_id stored with metadata for tenant isolation
    - Preserves original file structure from user's vault
    - Direct mapping to WebDAV paths
    - Contains unmodified content as uploaded by the user
 
-2. **Processed Storage Backend**:
+2. **Processed Storage Backend**: *(Future Implementation)*
    - Read-only access to transformed content
    - Dynamically generated from metadata database:
      - Queries identify published content (with `publish: true` in frontmatter) and its dependencies
@@ -43,26 +44,59 @@ The `marble-storage` crate implements a hybrid storage architecture combining ob
 
 ## API Design
 
+### Current Implementation Focus
+
 ```rust
-// Example API design (to be refined)
+// Current implementation focuses on the write side
 pub trait MarbleStorage {
     // Create a raw storage backend for a specific tenant
-    fn raw_storage(&self, tenant: &str) -> Box<dyn OpenDAL>;
+    fn raw_storage(&self, user_id: uuid::Uuid) -> Result<Box<dyn OpenDAL>, StorageError>;
     
-    // Create a processed storage backend
-    fn processed_storage(&self) -> Box<dyn OpenDAL>;
-    
-    // Convert a raw path to a processed path
-    fn raw_to_processed_path(&self, tenant: &str, path: &str) -> String;
+    // Get the hash backend for direct hash-based access
+    fn hash_storage(&self) -> Box<dyn OpenDAL>;
 }
 
-// Implementation might use configuration to determine underlying storage
+// Initial implementation will use file system for local development
 pub struct FileSystemStorage {
-    raw_base_path: PathBuf,
-    processed_base_path: PathBuf,
+    hash_base_path: PathBuf,
+    db_pool: sqlx::PgPool,
 }
 
-// Other implementations might use S3, databases, etc.
+// Production implementation will use S3
+pub struct S3Storage {
+    bucket_name: String,
+    client: opendal::services::S3,
+    db_pool: sqlx::PgPool,
+}
+
+// Error handling
+#[derive(thiserror::Error, Debug)]
+pub enum StorageError {
+    #[error("database error: {0}")]
+    Database(#[from] sqlx::Error),
+    
+    #[error("storage operation error: {0}")]
+    Storage(String),
+    
+    #[error("authorization error: {0}")]
+    Authorization(String),
+    
+    #[error("configuration error: {0}")]
+    Configuration(String),
+}
+```
+
+### Future API Additions (Read Side)
+
+```rust
+// To be implemented in future phases
+pub trait MarbleStorage {
+    // Current write-side methods...
+    
+    // Future read-side methods:
+    fn processed_storage(&self) -> Box<dyn OpenDAL>;
+    fn raw_to_processed_path(&self, user_id: uuid::Uuid, path: &str) -> Result<String, StorageError>;
+}
 ```
 
 ## Path Handling

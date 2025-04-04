@@ -47,6 +47,7 @@ Marble is a multi-tenant notes and knowledge management platform with publishing
 - [Database Repositories Implementation](handoffs/database_repositories_implementation.md) - **[IMPLEMENTED]** Repositories
 - [Database Testing Fixes](handoffs/database_testing_fixes.md) - **[IMPLEMENTED]** Test reliability
 - [Documentation Restructuring](handoffs/documentation_restructuring.md) - **[IMPLEMENTED]** Doc reorganization
+- [Marble Storage Implementation](handoffs/marble_storage_implementation.md) - Storage implementation planning
 - [All Handoffs](handoffs/index.md) - Complete list of work handoffs
 
 ## Implementation Status
