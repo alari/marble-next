@@ -19,7 +19,7 @@ async fn test_hash_storage_integration() {
     let path = "/.hash/test_integration";
     
     // Write content
-    hash_op.write(path, content).await.expect("Failed to write content");
+    hash_op.write(path, content.to_vec()).await.expect("Failed to write content");
     
     // Read content
     let retrieved = hash_op.read(path).await.expect("Failed to read content");

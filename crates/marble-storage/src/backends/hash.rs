@@ -163,7 +163,7 @@ mod tests {
         let hash = hash_content(content).expect("Failed to hash content");
         
         // Store the content
-        put_content_by_hash(&storage, &hash, content)
+        put_content_by_hash(&storage, &hash, content.to_vec())
             .await
             .expect("Failed to store content");
         
@@ -193,7 +193,7 @@ mod tests {
         assert!(!exists_before, "Content should not exist before storing");
         
         // Store the content
-        put_content_by_hash(&storage, &hash, content)
+        put_content_by_hash(&storage, &hash, content.to_vec())
             .await
             .expect("Failed to store content");
         
@@ -215,11 +215,11 @@ mod tests {
         let hash = hash_content(content).expect("Failed to hash content");
         
         // Store the content twice
-        put_content_by_hash(&storage, &hash, content)
+        put_content_by_hash(&storage, &hash, content.to_vec())
             .await
             .expect("Failed to store content first time");
             
-        put_content_by_hash(&storage, &hash, content)
+        put_content_by_hash(&storage, &hash, content.to_vec())
             .await
             .expect("Failed to store content second time");
         
@@ -246,7 +246,7 @@ mod tests {
         let hash = hash_content(content).expect("Failed to hash content");
         
         // Store the content
-        put_content_by_hash(&storage, &hash, content)
+        put_content_by_hash(&storage, &hash, content.to_vec())
             .await
             .expect("Failed to store content");
         

@@ -7,6 +7,7 @@ use std::sync::Arc;
 
 use marble_db::models::File;
 use marble_db::repositories::{FileRepository, SqlxFileRepository, Repository};
+use sqlx::types::chrono::Utc;
 
 use sqlx::postgres::PgPool;
 
@@ -224,7 +225,7 @@ mod tests {
         )
         .bind("raw_storage_test_user")
         .bind("test_password_hash")
-        .bind(chrono::Utc::now())
+        .bind(Utc::now())
         .fetch_one(pool)
         .await
         .map_err(|e| StorageError::Database(e))?;

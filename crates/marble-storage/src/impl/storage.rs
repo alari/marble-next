@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use opendal::Operator;
+use opendal::{Operator, Scheme};
 use sqlx::postgres::PgPool;
+use sqlx::types::chrono::Utc;
 use uuid::Uuid;
 
 use crate::api::MarbleStorage;
@@ -160,7 +161,7 @@ mod tests {
         
         // Get the hash storage
         let hash_storage = storage.hash_storage();
-        assert!(hash_storage.info().scheme() == "fs");
+        assert!(hash_storage.info().scheme() == Scheme::Fs);
     }
 
     #[test]
@@ -216,7 +217,7 @@ mod tests {
         )
         .bind("raw_storage_impl_test_user")
         .bind("test_password_hash")
-        .bind(chrono::Utc::now())
+        .bind(Utc::now())
         .bind(test_uuid)
         .fetch_one(pool)
         .await

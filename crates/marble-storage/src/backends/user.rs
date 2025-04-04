@@ -3,7 +3,10 @@
 //! This module provides utilities for working with user IDs, including
 //! conversion between UUID and database ID.
 
+use std::sync::Arc;
+
 use sqlx::postgres::PgPool;
+use sqlx::types::chrono::Utc;
 use uuid::Uuid;
 
 use crate::error::{StorageError, StorageResult};
@@ -73,7 +76,7 @@ mod tests {
         )
         .bind("uuid_test_user")
         .bind("test_password_hash")
-        .bind(chrono::Utc::now())
+        .bind(Utc::now())
         .bind(test_uuid)
         .fetch_one(&*pool)
         .await

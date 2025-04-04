@@ -18,6 +18,8 @@ pub mod hash;
 mod backends;
 mod r#impl;
 mod services;
+#[cfg(test)]
+mod tests;
 
 /// Module version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
