@@ -134,8 +134,9 @@ The implementation will follow these steps, with each component being individual
    - [DONE] Set up SQLx with migration support
    - [DONE] Create testing infrastructure with PostgreSQL 17 Docker environment
    - [DONE] Implement core PostgreSQL schema (users, folders, files)
+   - [DONE] Create Rust models for database tables
    - [WIP] Implement remaining schema tables (versions, content analysis, processing)
-   - Create SQLx operations for common queries
+   - [WIP] Create SQLx operations for common queries
    - Build comprehensive tests using the test database
    - This provides the foundation for all other components
 

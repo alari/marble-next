@@ -11,6 +11,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 pub mod api;
 pub mod config;
+pub mod models;
 
 #[cfg(test)]
 mod tests;
