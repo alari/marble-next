@@ -7,4 +7,9 @@ description = "Database schema and operations for Marble"
 
 [dependencies]
 marble-core.workspace = true
-# Dependencies will be added as needed
+sqlx.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+dotenv.workspace = true
+async-trait.workspace = true

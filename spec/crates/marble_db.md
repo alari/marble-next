@@ -127,44 +127,108 @@ The `marble-db` crate manages the PostgreSQL database schema and operations for 
 
 ## API Design
 
-The `marble-db` crate will provide typed interfaces for common database operations:
+The `marble-db` crate provides a trait-based API for database operations. The main interface is the `DatabaseApi` trait:
 
 ```rust
-// Example API (to be refined)
-pub struct MarbleDb {
-    pool: PgPool,
-}
+/// Core database operations trait
+#[async_trait::async_trait]
+pub trait DatabaseApi: Send + Sync + 'static {
+    /// Initialize the database, running migrations if needed
+    async fn initialize(&self) -> Result<()>;
 
-impl MarbleDb {
-    // File operations
-    async fn get_file(&self, user_id: i32, path: &str) -> Result<File, DbError>;
-    async fn create_file(&self, user_id: i32, path: &str, hash: &str) -> Result<File, DbError>;
-    async fn update_file(&self, file_id: i32, hash: &str) -> Result<File, DbError>;
-    async fn mark_deleted(&self, file_id: i32) -> Result<(), DbError>;
-    
-    // Version history
-    async fn get_file_versions(&self, file_id: i32) -> Result<Vec<FileVersion>, DbError>;
-    async fn get_file_at_version(&self, file_id: i32, version: i32) -> Result<FileVersion, DbError>;
-    
-    // Content analysis
-    async fn get_frontmatter(&self, file_id: i32) -> Result<Frontmatter, DbError>;
-    async fn update_frontmatter(&self, file_id: i32, frontmatter: &Frontmatter) -> Result<(), DbError>;
-    async fn get_document_links(&self, file_id: i32, include_embeds: bool) -> Result<Vec<DocumentLink>, DbError>;
-    async fn get_referencing_files(&self, file_id: i32, include_embeds: bool) -> Result<Vec<DocumentLink>, DbError>;
-    async fn get_next_published_link(&self, source_file_id: i32, current_position: i32) -> Result<Option<DocumentLink>, DbError>;
-    async fn get_prev_published_link(&self, source_file_id: i32, current_position: i32) -> Result<Option<DocumentLink>, DbError>;
-    async fn get_recursive_embeds(&self, file_id: i32) -> Result<Vec<DocumentLink>, DbError>;
-    
-    // Processing queue
-    async fn enqueue_file(&self, file_id: i32, operation: OperationType) -> Result<(), DbError>;
-    async fn get_processing_batch(&self, max_items: i32) -> Result<Vec<QueueItem>, DbError>;
-    async fn mark_processed(&self, queue_id: i32) -> Result<(), DbError>;
-    
-    // Publication
-    async fn get_published_content(&self, user_id: i32) -> Result<Vec<PublishedContent>, DbError>;
-    async fn invalidate_cache(&self, path_pattern: &str) -> Result<(), DbError>;
+    /// Get a reference to the database pool
+    fn pool(&self) -> &PgPool;
+
+    /// Check if the database is healthy
+    async fn health_check(&self) -> Result<()>;
 }
 ```
+
+This trait is implemented by the `Database` struct:
+
+```rust
+/// Database implementation that wraps a connection pool
+#[derive(Debug, Clone)]
+pub struct Database {
+    pool: Arc<PgPool>,
+}
+
+impl Database {
+    /// Create a new Database instance with the given connection pool
+    pub fn new(pool: PgPool) -> Self {
+        Self {
+            pool: Arc::new(pool),
+        }
+    }
+}
+```
+
+Additional functionality will be added through specialized traits for different database operations:
+
+```rust
+// Planned additional traits (to be implemented)
+pub trait UserOperations: DatabaseApi {
+    async fn create_user(&self, username: &str, password_hash: &str) -> Result<User>;
+    async fn get_user(&self, username: &str) -> Result<User>;
+    async fn authenticate_user(&self, username: &str, password_hash: &str) -> Result<User>;
+}
+
+pub trait FileOperations: DatabaseApi {
+    async fn get_file(&self, user_id: i32, path: &str) -> Result<File>;
+    async fn create_file(&self, user_id: i32, path: &str, hash: &str) -> Result<File>;
+    async fn update_file(&self, file_id: i32, hash: &str) -> Result<File>;
+    async fn mark_deleted(&self, file_id: i32) -> Result<()>;
+}
+
+pub trait VersionOperations: DatabaseApi {
+    async fn get_file_versions(&self, file_id: i32) -> Result<Vec<FileVersion>>;
+    async fn get_file_at_version(&self, file_id: i32, version: i32) -> Result<FileVersion>;
+}
+
+pub trait ContentAnalysisOperations: DatabaseApi {
+    async fn get_frontmatter(&self, file_id: i32) -> Result<Frontmatter>;
+    async fn update_frontmatter(&self, file_id: i32, frontmatter: &Frontmatter) -> Result<()>;
+    async fn get_document_links(&self, file_id: i32, include_embeds: bool) -> Result<Vec<DocumentLink>>;
+    async fn get_referencing_files(&self, file_id: i32, include_embeds: bool) -> Result<Vec<DocumentLink>>;
+    async fn get_next_published_link(&self, source_file_id: i32, current_position: i32) -> Result<Option<DocumentLink>>;
+    async fn get_prev_published_link(&self, source_file_id: i32, current_position: i32) -> Result<Option<DocumentLink>>;
+    async fn get_recursive_embeds(&self, file_id: i32) -> Result<Vec<DocumentLink>>;
+}
+
+pub trait ProcessingOperations: DatabaseApi {
+    async fn enqueue_file(&self, file_id: i32, operation: OperationType) -> Result<()>;
+    async fn get_processing_batch(&self, max_items: i32) -> Result<Vec<QueueItem>>;
+    async fn mark_processed(&self, queue_id: i32) -> Result<()>;
+}
+
+pub trait PublicationOperations: DatabaseApi {
+    async fn get_published_content(&self, user_id: i32) -> Result<Vec<PublishedContent>>;
+    async fn invalidate_cache(&self, path_pattern: &str) -> Result<()>;
+}
+```
+
+### Database Configuration
+
+Configuration for database connections is handled through the `DatabaseConfig` struct:
+
+```rust
+/// Configuration for a database connection
+#[derive(Debug, Clone)]
+pub struct DatabaseConfig {
+    /// Database connection URL
+    pub url: String,
+    /// Maximum number of connections in the pool
+    pub max_connections: u32,
+    /// Acquire timeout in seconds
+    pub acquire_timeout_seconds: u64,
+    /// Idle timeout in seconds
+    pub idle_timeout_seconds: u64,
+    /// Maximum lifetime of connections in seconds
+    pub max_lifetime_seconds: u64,
+}
+```
+
+The configuration can be loaded from environment variables using the `from_env()` method, which uses dotenv for configuration management.
 
 ## Integration Points
 

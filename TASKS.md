@@ -131,6 +131,7 @@
 The implementation will follow these steps, with each component being individually testable:
 
 1. **Database Schema (marble-db)**
+   - [WIP] Set up SQLx with migration support
    - Implement PostgreSQL schema for users, files, and metadata
    - Create SQLx operations for common queries
    - Build tests using a test database
