@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use opendal::services::{Fs, S3};
-use opendal::{Operator, Result as OpendalResult};
+use opendal::Operator;
 
 use crate::config::{StorageBackend, StorageConfig};
 use crate::error::{StorageError, StorageResult};
@@ -42,8 +42,8 @@ pub fn create_hash_storage(config: &StorageConfig) -> StorageResult<Operator> {
             }
             
             // Build the operator
-            let op = builder.build()?;
-            Ok(Operator::new(op)?)
+            let operator_builder = Operator::new(builder)?;
+            Ok(operator_builder.finish())
         }
     }
 }
@@ -69,8 +69,8 @@ fn create_fs_hash_storage(base_path: PathBuf) -> StorageResult<Operator> {
         ))
     })?);
     
-    let op = builder.build()?;
-    Ok(Operator::new(op)?)
+    let operator_builder = Operator::new(builder)?;
+    Ok(operator_builder.finish())
 }
 
 // Permission layer implementation removed for simplicity
@@ -80,7 +80,7 @@ fn create_fs_hash_storage(base_path: PathBuf) -> StorageResult<Operator> {
 pub async fn put_content_by_hash(
     op: &Operator,
     hash: &str,
-    content: &[u8],
+    content: Vec<u8>,
 ) -> StorageResult<()> {
     let path = hash_to_path(hash);
     

@@ -5,7 +5,7 @@
 pub use api::{MarbleStorage, MarbleStorageRef};
 pub use config::{FileSystemConfig, S3Config, StorageBackend, StorageConfig};
 pub use error::{StorageError, StorageResult};
-pub use impl::create_storage;
+pub use r#impl::create_storage;
 pub use services::hasher::ContentHasher;
 
 // Public modules
@@ -16,7 +16,7 @@ pub mod hash;
 
 // Internal modules
 mod backends;
-mod impl;
+mod r#impl;
 mod services;
 
 /// Module version

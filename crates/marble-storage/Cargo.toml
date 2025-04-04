@@ -9,6 +9,7 @@ description = "Storage backends for Marble"
 # Internal crates
 marble-core.workspace = true
 marble-db.workspace = true
+sqlx.workspace = true
 
 # Storage abstraction
 opendal.workspace = true

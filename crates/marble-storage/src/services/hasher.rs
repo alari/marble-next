@@ -26,7 +26,7 @@ impl ContentHasher {
         let hash = hash_content(content)?;
         
         // Store content in hash-based storage
-        put_content_by_hash(&self.operator, &hash, content).await?;
+        put_content_by_hash(&self.operator, &hash, content.to_vec()).await?;
         
         Ok(hash)
     }
@@ -67,7 +67,7 @@ impl ContentHasher {
         }
         
         // Store the content
-        put_content_by_hash(&self.operator, &actual_hash, content).await?;
+        put_content_by_hash(&self.operator, &actual_hash, content.to_vec()).await?;
         
         Ok(actual_hash)
     }
