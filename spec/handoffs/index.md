@@ -1,33 +1,22 @@
-# Work Handoffs Index
+# Work Handoffs
 
-**Last Updated:** 2025-04-03
+This document provides an index to all work handoffs in the Marble project.
 
-This directory contains handoff documents for work-in-progress features and tasks. These documents capture the current state, decisions, insights, and next steps for ongoing work.
+## Database Implementation
 
-## Active Handoffs
+- [Database Schema](database_schema.md) - Schema specification refinement
+- [Dependencies Update](dependencies_update.md) - Key dependency additions
+- [Marble-DB Implementation](marble_db_implementation.md) - SQLx support and migrations
+- [Database Testing](database_testing.md) - PostgreSQL 17 Docker testing setup
+- [Database Schema Implementation](database_schema_implementation.md) - **[IMPLEMENTED]** Core schema with migrations
+- [Database Models Implementation](database_models_implementation.md) - **[IMPLEMENTED]** Rust models for database
+- [Database Repositories Implementation](database_repositories_implementation.md) - **[IMPLEMENTED]** Repository patterns
+- [Database Testing Fixes](database_testing_fixes.md) - **[IMPLEMENTED]** Test reliability improvements
 
-- [Database Schema](database_schema.md) - Database schema specification refinement
-- [Dependencies Update](dependencies_update.md) - Added key dependencies for core functionality
+## Documentation
 
-## Template
+- [Documentation Restructuring](documentation_restructuring.md) - **[IMPLEMENTED]** Documentation reorganization
 
-- [template](template.md) - Template for creating new handoff documents
+## Templates
 
-## Handoff Status Summary
-
-| Handoff | Last Updated | Current Status | Next Steps |
-|---------|--------------|----------------|------------|
-| Database Schema | 2025-04-03 | Consolidating reference and embed tables | Implement schema in marble_db |
-| Dependencies Update | 2025-04-03 | Added all required dependencies | Document remaining dependencies and begin implementation |
-
-## Handoff Process
-
-When working on a feature or task:
-
-1. Create a handoff document using the template
-2. Update it after each significant work session
-3. Include key insights, decisions, and next steps
-4. Reference relevant specification documents
-5. Keep the "Last updated" timestamp current
-
-At the beginning of a new session, review the handoff document to understand the current state and next steps.
+- [Handoff Template](template.md) - Template for work handoffs
