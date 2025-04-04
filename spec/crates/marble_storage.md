@@ -48,25 +48,42 @@ The `marble-storage` crate implements a hybrid storage architecture combining ob
 
 ```rust
 // Current implementation focuses on the write side
-pub trait MarbleStorage {
+#[async_trait]
+pub trait MarbleStorage: Send + Sync + 'static {
     // Create a raw storage backend for a specific tenant
-    fn raw_storage(&self, user_id: uuid::Uuid) -> Result<Box<dyn OpenDAL>, StorageError>;
+    async fn raw_storage(&self, user_id: uuid::Uuid) -> StorageResult<Operator>;
     
     // Get the hash backend for direct hash-based access
-    fn hash_storage(&self) -> Box<dyn OpenDAL>;
+    fn hash_storage(&self) -> Operator;
 }
 
-// Initial implementation will use file system for local development
-pub struct FileSystemStorage {
-    hash_base_path: PathBuf,
-    db_pool: sqlx::PgPool,
+// Single implementation that supports both filesystem and S3
+pub struct MarbleStorageImpl {
+    config: StorageConfig,
+    hash_operator: Operator,
+    content_hasher: ContentHasher,
 }
 
-// Production implementation will use S3
-pub struct S3Storage {
-    bucket_name: String,
-    client: opendal::services::S3,
-    db_pool: sqlx::PgPool,
+// Configuration supports both backends
+pub enum StorageBackend {
+    S3(S3Config),
+    FileSystem(FileSystemConfig),
+}
+
+// Content hashing service
+pub struct ContentHasher {
+    operator: Operator,
+}
+
+impl ContentHasher {
+    // Store content and return its hash
+    async fn store_content(&self, content: &[u8]) -> StorageResult<String>;
+    
+    // Retrieve content by its hash
+    async fn get_content(&self, hash: &str) -> StorageResult<Vec<u8>>;
+    
+    // Check if content with the given hash exists
+    async fn content_exists(&self, hash: &str) -> StorageResult<bool>;
 }
 
 // Error handling
@@ -78,11 +95,46 @@ pub enum StorageError {
     #[error("storage operation error: {0}")]
     Storage(String),
     
+    #[error("opendal error: {0}")]
+    OpenDal(#[from] opendal::Error),
+    
     #[error("authorization error: {0}")]
     Authorization(String),
     
     #[error("configuration error: {0}")]
     Configuration(String),
+    
+    #[error("file not found: {0}")]
+    NotFound(String),
+    
+    #[error("validation error: {0}")]
+    Validation(String),
+}
+```
+
+### OpenDAL Integration Notes
+
+```rust
+// Creating an OpenDAL operator requires a two-step process
+let operator_builder = Operator::new(builder)?;
+let operator = operator_builder.finish();
+
+// Writing content in async functions requires owned data
+async fn write_content(op: &Operator, path: &str, content: Vec<u8>) -> Result<()> {
+    op.write(path, content).await?;
+    Ok(())
+}
+
+// Reading content returns a Vec<u8>
+async fn read_content(op: &Operator, path: &str) -> Result<Vec<u8>> {
+    let content = op.read(path).await?;
+    Ok(content)
+}
+
+// Checking if content exists
+async fn exists(op: &Operator, path: &str) -> Result<bool> {
+    let exists = op.is_exist(path).await?;
+    Ok(exists)
 }
 ```
 
@@ -90,12 +142,13 @@ pub enum StorageError {
 
 ```rust
 // To be implemented in future phases
+#[async_trait]
 pub trait MarbleStorage {
     // Current write-side methods...
     
     // Future read-side methods:
-    fn processed_storage(&self) -> Box<dyn OpenDAL>;
-    fn raw_to_processed_path(&self, user_id: uuid::Uuid, path: &str) -> Result<String, StorageError>;
+    async fn processed_storage(&self) -> StorageResult<Operator>;
+    async fn raw_to_processed_path(&self, user_id: Uuid, path: &str) -> StorageResult<String>;
 }
 ```
 

@@ -3,7 +3,26 @@
 **Last Updated: 2025-04-04**
 
 ## Current Status
-Phase 2 of the implementation plan is complete. We've implemented the content-addressable hashed storage with the `/.hash/{hash}` scheme, including support for both filesystem and S3 backends. A `ContentHasher` service manages the content hashing and storage operations.
+Phase 2 of the implementation plan is complete. We've implemented the content-addressable hashed storage with the `/.hash/{hash}` scheme, including support for both filesystem and S3 backends. A `ContentHasher` service manages the content hashing and storage operations. The code now compiles successfully.
+
+## Key Insights from Implementation
+
+### OpenDAL API Usage
+- OpenDAL's API requires a two-step process to create an operator:
+  1. Create an operator builder with `Operator::new(builder)`
+  2. Finish the builder with `.finish()` to get the actual operator
+- Custom layers need special handling and are not implemented yet
+- The borrowing checker requires `Vec<u8>` instead of `&[u8]` when writing content in async functions
+
+### Rust Module Structure
+- `impl` is a reserved keyword in Rust and cannot be used as a module name
+- Using `r#impl` allows us to work around this limitation
+- Creating a clean separation between API, services, and backends provides a maintainable structure
+
+### Content Storage Pattern
+- Content-addressable storage provides automatic deduplication
+- Using hash-based lookup for all content is efficient
+- Keeping metadata in the database while storing raw content by hash supports the hybrid storage model
 
 ## Implementation Plan
 
