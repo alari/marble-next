@@ -43,7 +43,7 @@ pub fn create_hash_storage(config: &StorageConfig) -> StorageResult<Operator> {
             
             // Build the operator
             let op = builder.build()?;
-            Ok(Operator::new(op)?.with_layer(DefaultPermissionLayer))
+            Ok(Operator::new(op)?)
         }
     }
 }
@@ -70,23 +70,11 @@ fn create_fs_hash_storage(base_path: PathBuf) -> StorageResult<Operator> {
     })?);
     
     let op = builder.build()?;
-    Ok(Operator::new(op)?.with_layer(DefaultPermissionLayer))
+    Ok(Operator::new(op)?)
 }
 
-/// A permission layer for OpenDAL that enforces hash path patterns
-struct DefaultPermissionLayer;
-
-impl opendal::Layer for DefaultPermissionLayer {
-    type RawLayer = Self;
-
-    fn layer(&self, inner: opendal::raw::LayeredOperator) -> OpendalResult<opendal::raw::LayeredOperator> {
-        Ok(inner)
-    }
-
-    fn name(&self) -> &str {
-        "default_permission_layer"
-    }
-}
+// Permission layer implementation removed for simplicity
+// We'll add a proper Layer implementation in a future phase if needed
 
 /// Put content into hash storage with a given hash
 pub async fn put_content_by_hash(

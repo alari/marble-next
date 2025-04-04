@@ -3,7 +3,7 @@
 **Last Updated: 2025-04-04**
 
 ## Current Status
-Phase 1 of the implementation plan is complete. The crate now has OpenDAL dependencies, error handling, configuration structure, and API interfaces defined.
+Phase 2 of the implementation plan is complete. We've implemented the content-addressable hashed storage with the `/.hash/{hash}` scheme, including support for both filesystem and S3 backends. A `ContentHasher` service manages the content hashing and storage operations.
 
 ## Implementation Plan
 
@@ -52,9 +52,9 @@ We will focus exclusively on the write side storage implementation in this phase
 - The read side implementation (with path-based tenant isolation) is a separate future project
 
 ## Next Steps
-1. Begin Phase 2 by implementing the content-addressable hashed storage backend
-2. Create an OpenDAL operator for the hash-based storage
-3. Add unit tests for the hash storage implementation
+1. Begin Phase 3 by implementing tenant isolation through database metadata
+2. Integrate with marble-db to store and retrieve file path to hash mappings
+3. Implement user_id scoping for all database queries to ensure tenant isolation
 
 ## References
 - [Storage Architecture](../domain/storage_architecture.md)

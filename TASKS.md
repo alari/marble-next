@@ -152,7 +152,7 @@ The implementation will follow these steps, with each component being individual
    - [DONE] Add OpenDAL with S3 support to dependencies
    - [DONE] Define error handling strategy with `StorageError` type
    - [DONE] Implement configuration system for storage backends
-   - [TODO] Create content-addressable hashed storage with `/.hash/{hash}` scheme
+   - [DONE] Create content-addressable hashed storage with `/.hash/{hash}` scheme
    - [TODO] Implement tenant isolation through user_id in database metadata
    - [TODO] Create OpenDAL backend integrated with marble-db for path-to-hash lookup
    - [TODO] Develop comprehensive integration tests
