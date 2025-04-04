@@ -65,6 +65,24 @@ The system provides utilities to convert between these two ID types, ensuring pr
 - Authentication happens before storage operations
 - Usernames are also used in path structures for processed content
 
+## Tenant Isolation
+
+The storage system enforces tenant isolation through several mechanisms:
+
+1. **Database Metadata Isolation**:
+   - Every file's metadata includes a user_id that links to the owning user
+   - All database queries filter by user_id to ensure users only see their own files
+   - Users can have files with identical paths without conflict
+
+2. **Content Deduplication**:
+   - Actual content is stored in a content-addressable hash-based storage
+   - Multiple users with identical content reference the same storage object
+   - This provides storage efficiency while maintaining logical isolation
+
+3. **Testing Confirmation**:
+   - Integration tests verify that users cannot access each other's files
+   - Tests confirm that content deduplication works correctly across tenant boundaries
+
 ## API Design
 
 ### Current Implementation
@@ -247,13 +265,33 @@ pub trait MarbleStorage {
 - Supports user authentication verification
 - Integrates with marble-db for metadata storage and tenant isolation
 
+## Testing
+
+The marble-storage crate includes:
+
+1. **Unit Tests**: Testing individual components
+   - ContentHasher tests
+   - Hash-based storage tests
+   - Configuration validation tests
+
+2. **Integration Tests**: Testing component interactions
+   - RawStorageBackend tests that verify tenant isolation
+   - Tests that confirm content deduplication works correctly
+   - Database integration tests
+
+3. **Test Environment**:
+   - Tests use local filesystem storage by default
+   - Database tests require a PostgreSQL test database
+   - Tests are skipped if the test environment is not available
+
 ## Current Implementation Status
 
-- Content-addressable hash storage is fully implemented
-- `ContentHasher` service for content hashing and storage is complete
-- `RawStorageBackend` with database integration is implemented
-- User ID conversion between UUID and database ID is implemented
-- OpenDAL adapter for the `RawStorageBackend` is in progress
+- Content-addressable hash storage is fully implemented ✅
+- `ContentHasher` service for content hashing and storage is complete ✅
+- `RawStorageBackend` with database integration is implemented ✅
+- User ID conversion between UUID and database ID is implemented ✅
+- Tenant isolation is implemented and tested ✅
+- OpenDAL adapter for the `RawStorageBackend` is in progress 🔄
 
 ## Future Work
 
@@ -261,4 +299,5 @@ pub trait MarbleStorage {
 - Implement the processed storage backend
 - Establish caching strategies
 - Implement garbage collection for unreferenced content
-- Add comprehensive testing for tenant isolation
+- Add comprehensive testing for edge cases
+- Improve error handling and recovery
