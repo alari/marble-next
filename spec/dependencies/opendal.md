@@ -84,6 +84,35 @@ OpenDAL uses a layered architecture:
 3. **Accessor** - The core interface for storage operations
 4. **Operator** - The user-facing API that combines services and layers
 
+### OpenDAL API Structure
+
+OpenDAL organizes its API into several key modules:
+
+1. **Core API** - Top-level modules accessible directly via `opendal::{Operator, Metadata, etc.}`
+2. **Raw API** - Lower-level abstractions in `opendal::raw::{Accessor, Layer, etc.}`
+3. **Services** - Storage backends in `opendal::services::{S3, Fs, Memory, etc.}`
+4. **Layers** - Middleware components in `opendal::layers::{LoggingLayer, etc.}`
+
+When implementing custom adapters, we need to use types from the `raw` module:
+
+```rust
+// Import the core API
+use opendal::{Operator, Metadata, Reader, Writer};
+
+// Import the raw API for custom adapters
+use opendal::raw::{Accessor, Layer, LayeredAccessor, AccessorInfo, EntryIter};
+
+// Import services and layers as needed
+use opendal::services::Memory;
+use opendal::layers::LoggingLayer;
+```
+
+The `bytes` crate is required for handling binary data in custom adapters:
+
+```rust
+use bytes::Bytes;  // Required for the write method's bytes parameter
+```
+
 ### Approaches to Custom Integration
 
 There are three main approaches to integrate OpenDAL with custom storage systems:

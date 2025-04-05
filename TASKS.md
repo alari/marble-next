@@ -155,8 +155,16 @@ The implementation will follow these steps, with each component being individual
    - [DONE] Create content-addressable hashed storage with `/.hash/{hash}` scheme
    - [DONE] Implement ContentHasher service for managing content
    - [DONE] Support both filesystem and S3 backends
-   - [TODO] Implement tenant isolation through user_id in database metadata
-   - [TODO] Create OpenDAL backend integrated with marble-db for path-to-hash lookup
+   - [DONE] Implement tenant isolation through user_id in database metadata
+   - [DONE] Research OpenDAL integration challenges
+      - [DONE] Implement placeholder adapter with Memory backend
+      - [DONE] Document OpenDAL adapter complexities
+      - [DONE] Update dependency documentation
+   - [WIP] Strategic pivot to Unified Tenant Storage API
+      - [TODO] Define `TenantStorage` trait with explicit tenant isolation
+      - [TODO] Implement trait using existing RawStorageBackend and ContentHasher
+      - [TODO] Add comprehensive tests for tenant isolation
+      - [TODO] Create integration path for WebDAV
    - [TODO] Develop comprehensive integration tests
    - [TODO] Update documentation to match implementation
    - Completion criteria: Working write-side storage with tests passing

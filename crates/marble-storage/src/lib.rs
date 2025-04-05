@@ -3,9 +3,10 @@
 
 // Re-export the primary traits and types
 pub use api::{MarbleStorage, MarbleStorageRef};
+pub use api::tenant::{TenantStorage, TenantStorageRef, FileMetadata};
 pub use config::{FileSystemConfig, S3Config, StorageBackend, StorageConfig};
 pub use error::{StorageError, StorageResult};
-pub use r#impl::{create_storage, create_storage_with_db};
+pub use r#impl::{create_storage, create_storage_with_db, create_tenant_storage};
 pub use services::hasher::ContentHasher;
 
 // Public modules
