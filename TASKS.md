@@ -43,10 +43,12 @@
   - Restructures content according to permalink values
   - Transforms Obsidian links to standard markdown
 
-- [WIP] WebDAV implementation details
+- [DONE] WebDAV implementation details
   - WebDAV chosen for direct Obsidian sync compatibility
-  - [TODO] What specific WebDAV features are required for Obsidian compatibility?
-  - [TODO] How should WebDAV properties be handled?
+  - Implementation approach decided: Use dav-server (standard, not OpenDAL variant)
+  - Direct integration with TenantStorage API for tenant isolation
+  - WebDAV properties to be implemented with standard dav-server property handling
+  - Comprehensive implementation plan defined in handoff document
 
 - [TODO] User management API
   - What operations should the user management API support?
@@ -94,9 +96,11 @@
   - Initial implementation with fixed templates
   - Future support for custom templates from vaults
 
-- [TODO] WebDAV implementation specifics
-  - Integration approach for dav-server-opendalfs with OpenDAL backends
-  - Implementation of public endpoint for processed content
+- [DONE] WebDAV implementation specifics
+  - Pivoted from dav-server-opendalfs to standard dav-server
+  - Direct integration with TenantStorage API instead of OpenDAL backends
+  - Implementation approach defined in WebDAV handoff document
+  - Focus on core WebDAV functionality for Obsidian compatibility
 
 ## Implementation Planning
 
@@ -142,11 +146,36 @@ The implementation will follow these steps, with each component being individual
    - This provides the foundation for all other components
 
 2. **WebDAV Server Framework (bin/marble-webdav)**
-   - Implement basic server structure using dav-server-opendalfs
-   - Create interfaces for storage backends (to be injected)
-   - Implement authentication mechanisms
-   - Create mock backends for testing
-   - This allows testing the WebDAV interface independently
+   - [WIP] Implement WebDAV server using standard dav-server crate
+   - [TODO] Phase 1: Setup WebDAV Server Framework
+     - [TODO] Add dav-server to dependencies
+     - [TODO] Create WebDAV handler structure with TenantStorage integration
+     - [TODO] Implement authentication to extract tenant IDs from requests
+     - [TODO] Create Axum integration for HTTP serving
+   - [TODO] Phase 2: Implement Basic Authentication
+     - [TODO] Create AuthService trait for user authentication
+     - [TODO] Implement database-backed authentication service  
+     - [TODO] Extract credentials from WebDAV requests
+     - [TODO] Map usernames to tenant UUIDs for TenantStorage operations
+   - [TODO] Phase 3: Implement Basic Path Handling
+     - [TODO] Implement path normalization between WebDAV and TenantStorage
+     - [TODO] Handle root directory special cases
+     - [TODO] Ensure proper URL encoding/decoding
+   - [TODO] Phase 4: Implement Core WebDAV Methods
+     - [TODO] Implement GET method for file retrieval
+     - [TODO] Implement PROPFIND for directory listing
+     - [TODO] Implement PUT method for file creation/update
+     - [TODO] Implement MKCOL for directory creation
+     - [TODO] Implement DELETE method for file/directory removal
+   - [TODO] Phase 5: Implement Advanced WebDAV Functionality
+     - [TODO] Implement COPY and MOVE operations
+     - [TODO] Implement lock management
+     - [TODO] Add WebDAV property support
+   - [TODO] Phase 6: Testing and Optimization
+     - [TODO] Create comprehensive integration tests
+     - [TODO] Test with actual Obsidian client
+     - [TODO] Optimize for performance with large vaults
+   - This allows direct integration with Obsidian and other WebDAV clients
 
 3. **Storage Implementation (marble-storage)**
    - [DONE] Add OpenDAL with S3 support to dependencies
@@ -160,11 +189,11 @@ The implementation will follow these steps, with each component being individual
       - [DONE] Implement placeholder adapter with Memory backend
       - [DONE] Document OpenDAL adapter complexities
       - [DONE] Update dependency documentation
-   - [WIP] Strategic pivot to Unified Tenant Storage API
-      - [TODO] Define `TenantStorage` trait with explicit tenant isolation
-      - [TODO] Implement trait using existing RawStorageBackend and ContentHasher
-      - [TODO] Add comprehensive tests for tenant isolation
-      - [TODO] Create integration path for WebDAV
+   - [DONE] Strategic pivot to Unified Tenant Storage API
+      - [DONE] Define `TenantStorage` trait with explicit tenant isolation
+      - [DONE] Implement trait using existing RawStorageBackend and ContentHasher
+      - [DONE] Add comprehensive tests for tenant isolation
+      - [DONE] Create integration path for WebDAV in design
    - [TODO] Develop comprehensive integration tests
    - [TODO] Update documentation to match implementation
    - Completion criteria: Working write-side storage with tests passing

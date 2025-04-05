@@ -21,10 +21,10 @@ The project is organized as a Rust workspace with the following components:
 
 - `crates/marble-core`: Shared types, frontmatter definitions, and utilities
 - `crates/marble-db`: Database schema and operations with PostgreSQL
-- `crates/marble-storage`: OpenDAL backends for raw and processed data
+- `crates/marble-storage`: TenantStorage API with tenant isolation for content storage
 - `crates/marble-write-processor`: Content analysis and metadata extraction
 - `crates/marble-read-processor`: Content transformation and read model generation
-- `bin/marble-webdav`: WebDAV server binary with authentication and routing
+- `bin/marble-webdav`: WebDAV server binary with authentication and TenantStorage integration
 - Read Side crates (future implementation)
 
 The system uses a hybrid storage architecture:
