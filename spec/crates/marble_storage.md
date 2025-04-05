@@ -214,6 +214,12 @@ impl RawStorageBackend {
     
     // List files in a directory
     pub async fn list_files(&self, dir_path: &str) -> StorageResult<Vec<String>>;
+    
+    // Create a directory
+    pub async fn create_directory(&self, dir_path: &str) -> StorageResult<()>;
+    
+    // Get file metadata
+    pub async fn get_file_metadata(&self, path: &str) -> StorageResult<FileMetadata>;
 }
 ```
 
@@ -222,7 +228,53 @@ These operations enforce tenant isolation through the user_id field and integrat
 ### Future API Additions (Read Side)
 
 ```rust
-// To be implemented in future phases
+// Tenant Storage API
+#[async_trait]
+pub trait TenantStorage: Send + Sync + 'static {
+    // Read a file from tenant's storage
+    async fn read(&self, tenant_id: &Uuid, path: &str) -> StorageResult<Vec<u8>>;
+    
+    // Write a file to tenant's storage
+    async fn write(&self, tenant_id: &Uuid, path: &str, content: Vec<u8>, content_type: Option<&str>) -> StorageResult<()>;
+    
+    // Check if a file exists in tenant's storage
+    async fn exists(&self, tenant_id: &Uuid, path: &str) -> StorageResult<bool>;
+    
+    // Delete a file from tenant's storage
+    async fn delete(&self, tenant_id: &Uuid, path: &str) -> StorageResult<()>;
+    
+    // List files in a directory in tenant's storage
+    async fn list(&self, tenant_id: &Uuid, dir_path: &str) -> StorageResult<Vec<String>>;
+    
+    // Create a directory in tenant's storage
+    async fn create_directory(&self, tenant_id: &Uuid, path: &str) -> StorageResult<()>;
+    
+    // Get metadata for a file in tenant's storage
+    async fn metadata(&self, tenant_id: &Uuid, path: &str) -> StorageResult<FileMetadata>;
+}
+
+// File metadata structure
+pub struct FileMetadata {
+    // Path to the file
+    pub path: String,
+    
+    // Size of the file in bytes
+    pub size: u64,
+    
+    // Content type (MIME type) of the file
+    pub content_type: String,
+    
+    // Whether the file is a directory
+    pub is_directory: bool,
+    
+    // Last modified time in milliseconds since epoch
+    pub last_modified: Option<u64>,
+    
+    // Content hash for verification
+    pub content_hash: Option<String>,
+}
+
+// Original OpenDAL-based API (Future integration)
 #[async_trait]
 pub trait MarbleStorage {
     // Current write-side methods...
@@ -290,7 +342,9 @@ The marble-storage crate includes:
 - `ContentHasher` service for content hashing and storage is complete ✅
 - `RawStorageBackend` with database integration is implemented ✅
 - User ID conversion between UUID and database ID is implemented ✅
-- Tenant isolation is implemented and tested ✅
+- Tenant isolation is implemented and tested ✅ 
+- Directory operations with automatic parent directory creation are implemented ✅
+- Efficient metadata retrieval without loading full file content is implemented ✅
 - OpenDAL adapter for the `RawStorageBackend` is in progress 🔄
 
 ## Future Work
@@ -298,6 +352,11 @@ The marble-storage crate includes:
 - Complete OpenDAL adapter implementation
 - Implement the processed storage backend
 - Establish caching strategies
-- Implement garbage collection for unreferenced content
+- Implement garbage collection for unreferenced content:
+  - Scan for content hashes that are no longer referenced by any file
+  - Implement a reference counting mechanism or mark-and-sweep algorithm
+  - Add safety checks to prevent accidental deletion of referenced content
+  - Implement a scheduled cleanup process for content garbage collection
 - Add comprehensive testing for edge cases
 - Improve error handling and recovery
+- Add batch operations for performance optimization

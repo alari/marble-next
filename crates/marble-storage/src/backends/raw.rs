@@ -7,9 +7,9 @@ use std::sync::Arc;
 
 use marble_db::models::File;
 use marble_db::repositories::{FileRepository, SqlxFileRepository, Repository};
-use sqlx::types::chrono::Utc;
-
 use sqlx::postgres::PgPool;
+
+use crate::api::tenant::FileMetadata;
 
 use crate::error::{StorageError, StorageResult};
 use crate::hash::hash_content;
@@ -53,6 +53,44 @@ impl RawStorageBackend {
             Ok(file) => Ok(file),
             Err(e) => Err(StorageError::Storage(format!("Database error: {}", e))),
         }
+    }
+    
+    /// Get metadata for a file
+    pub async fn get_file_metadata(&self, path: &str) -> StorageResult<FileMetadata> {
+        use crate::api::tenant::FileMetadata;
+        
+        // Look up the file in the database
+        let file = self.get_file_by_path(path).await?
+            .ok_or_else(|| StorageError::NotFound(format!("File not found: {}", path)))?;
+            
+        // Check if the file is marked as deleted
+        if file.is_deleted {
+            return Err(StorageError::NotFound(format!("File is deleted: {}", path)));
+        }
+        
+        // Determine if it's a directory based on the content type
+        let is_directory = 
+            file.content_type == "application/vnd.marble.directory" || 
+            path.ends_with('/') || 
+            path == "/";
+            
+        // Get the last modified time from the database
+        let last_modified = file.updated_at
+            .timestamp_millis()
+            .try_into()
+            .ok();
+            
+        // Create the metadata
+        let metadata = FileMetadata {
+            path: file.path,
+            size: file.size as u64,
+            content_type: file.content_type,
+            is_directory,
+            last_modified,
+            content_hash: Some(file.content_hash),
+        };
+        
+        Ok(metadata)
     }
     
     /// Create a new file in the database
@@ -167,6 +205,82 @@ impl RawStorageBackend {
         Ok(())
     }
     
+    /// Create a directory
+    ///
+    /// Creates an empty directory by adding a special placeholder file to the database.
+    /// Since we don't actually have physical directories (only files), this is
+    /// represented as a metadata-only entry in the database with a special content type.
+    pub async fn create_directory(&self, dir_path: &str) -> StorageResult<()> {
+        // Normalize the directory path to ensure it ends with a slash
+        let normalized_dir = if dir_path.ends_with('/') || dir_path == "" {
+            dir_path.to_string()
+        } else {
+            format!("{}/", dir_path)
+        };
+        
+        // Check if the directory already exists by checking for any files with this prefix
+        let files = match self.file_repo.list_by_folder_path(self.user_id, &normalized_dir, false).await {
+            Ok(files) => files,
+            Err(e) => return Err(StorageError::Storage(format!("Database error: {}", e))),
+        };
+        
+        // If there are already files with this prefix, the directory "exists"
+        if !files.is_empty() {
+            return Ok(());
+        }
+        
+        // Create the parent directories if needed
+        let path_parts: Vec<&str> = normalized_dir
+            .trim_matches('/')
+            .split('/')
+            .collect();
+            
+        // Create parent directories (if needed)
+        if path_parts.len() > 1 {
+            let mut parent_path = String::from("/");
+            for i in 0..path_parts.len() - 1 {
+                parent_path.push_str(path_parts[i]);
+                parent_path.push('/');
+                
+                // Check if this parent directory exists
+                let parent_files = match self.file_repo.list_by_folder_path(self.user_id, &parent_path, false).await {
+                    Ok(files) => files,
+                    Err(e) => return Err(StorageError::Storage(format!("Database error: {}", e))),
+                };
+                
+                // If it doesn't exist, create a placeholder
+                if parent_files.is_empty() {
+                    let placeholder_path = format!("{}/.dir", parent_path.trim_end_matches('/'));
+                    let content_hash = hash_content(&[])?;
+                    self.create_file(
+                        &placeholder_path,
+                        &content_hash,
+                        "application/vnd.marble.directory",
+                        0,
+                    ).await?;
+                }
+            }
+        }
+        
+        // Create an empty directory placeholder
+        let placeholder_path = if normalized_dir == "/" {
+            "/.dir".to_string()
+        } else {
+            format!("{}/.dir", normalized_dir.trim_end_matches('/'))
+        };
+        
+        // Create a zero-length file with a special content type to mark it as a directory
+        let content_hash = hash_content(&[])?;
+        self.create_file(
+            &placeholder_path,
+            &content_hash,
+            "application/vnd.marble.directory",
+            0,
+        ).await?;
+        
+        Ok(())
+    }
+    
     /// List files in a directory
     pub async fn list_files(&self, dir_path: &str) -> StorageResult<Vec<String>> {
         // Normalize the directory path
@@ -196,10 +310,12 @@ impl RawStorageBackend {
 mod tests {
     use super::*;
     use sqlx::postgres::PgPoolOptions;
+    use sqlx::types::chrono::Utc;
     use std::time::Duration;
     use tempfile::tempdir;
     use crate::backends::hash::create_hash_storage;
     use crate::config::StorageConfig;
+    use crate::api::tenant::FileMetadata;
     
     async fn setup_test_db() -> Result<Arc<PgPool>, StorageError> {
         // This should be skipped if no test database is available
@@ -273,6 +389,102 @@ mod tests {
         );
         
         Ok((backend, user_id, temp_dir))
+    }
+    
+    #[tokio::test]
+    async fn test_directory_operations() {
+        // Setup the test environment
+        let (backend, user_id, _temp_dir) = match setup_test_backend().await {
+            Ok(setup) => setup,
+            Err(_) => {
+                // Skip the test if setup fails
+                return;
+            }
+        };
+        
+        // Test creating a directory
+        backend.create_directory("/test_dir").await.expect("Failed to create directory");
+        
+        // Test checking if directory exists
+        let exists = backend.file_exists("/test_dir/.dir").await.expect("Failed to check directory existence");
+        assert!(exists, "Directory placeholder should exist after creation");
+        
+        // Test creating nested directories
+        backend.create_directory("/parent/child/grandchild").await.expect("Failed to create nested directories");
+        
+        // Verify parent directories were created
+        let parent_exists = backend.file_exists("/parent/.dir").await.expect("Failed to check parent directory");
+        let child_exists = backend.file_exists("/parent/child/.dir").await.expect("Failed to check child directory");
+        let grandchild_exists = backend.file_exists("/parent/child/grandchild/.dir").await.expect("Failed to check grandchild directory");
+        
+        assert!(parent_exists, "Parent directory should exist");
+        assert!(child_exists, "Child directory should exist");
+        assert!(grandchild_exists, "Grandchild directory should exist");
+        
+        // Test writing a file to a directory
+        backend.write_file(
+            "/parent/child/file.txt",
+            b"Test content in directory".to_vec(),
+            "text/plain",
+        ).await.expect("Failed to write file in directory");
+        
+        // Test listing files in a directory
+        let files = backend.list_files("/parent/child").await.expect("Failed to list directory");
+        assert!(files.contains(&"/parent/child/file.txt".to_string()), "Directory listing should include the file");
+        assert!(files.contains(&"/parent/child/grandchild/.dir".to_string()), "Directory listing should include subdirectory placeholder");
+        
+        // Test getting metadata
+        let metadata = backend.get_file_metadata("/parent/child/.dir").await.expect("Failed to get directory metadata");
+        assert!(metadata.is_directory, "Should be identified as a directory");
+        assert_eq!(metadata.size, 0, "Directory should have zero size");
+        assert_eq!(metadata.content_type, "application/vnd.marble.directory", "Should have directory content type");
+        
+        // Clean up
+        let _ = sqlx::query("DELETE FROM files WHERE user_id = $1")
+            .bind(user_id)
+            .execute(&*backend.db_pool)
+            .await;
+    }
+    
+    #[tokio::test]
+    async fn test_metadata_retrieval() {
+        // Setup the test environment
+        let (backend, user_id, _temp_dir) = match setup_test_backend().await {
+            Ok(setup) => setup,
+            Err(_) => {
+                // Skip the test if setup fails
+                return;
+            }
+        };
+        
+        // Test content with known values
+        let content = b"Test content for metadata testing".to_vec();
+        let content_size = content.len() as u64;
+        let expected_content_hash = hash_content(&content).expect("Failed to hash content");
+        
+        // Write a file
+        backend.write_file(
+            "/metadata_test.md",
+            content.clone(),
+            "text/markdown",
+        ).await.expect("Failed to write file");
+        
+        // Get metadata
+        let metadata = backend.get_file_metadata("/metadata_test.md").await.expect("Failed to get metadata");
+        
+        // Verify metadata fields
+        assert_eq!(metadata.path, "/metadata_test.md");
+        assert_eq!(metadata.size, content_size);
+        assert_eq!(metadata.content_type, "text/markdown");
+        assert!(!metadata.is_directory);
+        assert!(metadata.last_modified.is_some(), "Last modified time should be set");
+        assert_eq!(metadata.content_hash.unwrap(), expected_content_hash, "Content hash should match expected value");
+        
+        // Clean up
+        let _ = sqlx::query("DELETE FROM files WHERE user_id = $1")
+            .bind(user_id)
+            .execute(&*backend.db_pool)
+            .await;
     }
     
     #[tokio::test]
