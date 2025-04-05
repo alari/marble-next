@@ -361,6 +361,7 @@ async fn handle_webdav(
 ## References
 
 - [WebDAV RFC 4918](https://tools.ietf.org/html/rfc4918)
+- [Authentication Architecture](../domain/authentication.md)
 - [dav-server Crate Documentation](https://docs.rs/dav-server/)
 - [Axum Documentation](https://docs.rs/axum/)
 - [Obsidian WebDAV Sync Documentation](https://help.obsidian.md/Sync+your+notes/WebDAV)

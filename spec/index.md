@@ -18,6 +18,7 @@ Marble is a multi-tenant notes and knowledge management platform with publishing
 - [Glossary](domain/glossary.md) - Key terms and concepts
 - [Architecture Diagram](domain/architecture_diagram.md) - Visual system overview
 - [Storage Architecture](domain/storage_architecture.md) - Content storage design
+- [Authentication Architecture](domain/authentication.md) - **[IMPLEMENTED]** Authentication system
 - [Database Schema](domain/database_schema.md) - Database design and tables
   - [Concise Schema](domain/database_schema_concise.md) - Compact table descriptions
   - [Current Schema](domain/database_schema_current.md) - **[IMPLEMENTED]** tables

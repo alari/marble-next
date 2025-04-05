@@ -34,6 +34,7 @@ For a complete schema description:
 - Models for users, folders, and files
 - Repository pattern with trait-based interfaces
 - CRUD operations for core tables
+- Authentication service with tenant isolation
 - Transaction support
 - Testing infrastructure
 
@@ -50,12 +51,15 @@ For a complete schema description:
 3. **Transaction Support**: Ensuring data consistency
 4. **Soft Deletion**: Preserving data with tombstone flags
 5. **Path-based Organization**: Organizing content hierarchically
+6. **Authentication Service**: Centralized authentication for all application layers
+7. **Tenant Isolation**: Ensuring multi-tenant data separation through UUID-based tenant identifiers
 
 ## Integration Points
 
 - **Storage Layer**: Maps paths to content hashes
 - **Processor**: Queries for changed files and dependencies
-- **WebDAV Server**: Uses database for authentication and paths
+- **WebDAV Server**: Uses AuthService for authentication and tenant isolation
+- **Authentication**: Provides centralized authentication service via AuthService trait
 
 ## Related Handoffs
 
