@@ -6,4 +6,5 @@ authors.workspace = true
 description = "Core functionality for Marble"
 
 [dependencies]
-# Dependencies will be added as needed
+# Error handling
+thiserror.workspace = true

@@ -15,8 +15,9 @@ This document serves as an index to all external dependencies used in the Marble
 
 - [axum](axum.md) - Web server framework
 - [tower](tower.md) - HTTP middleware for axum
-- [hyper](hyper.md) - HTTP implementation
-- [dav-server-opendalfs](dav_server_opendalfs.md) - WebDAV server with OpenDAL
+- [tower-http](tower_http.md) - HTTP-specific middleware for tower
+- [dav-server](dav_server.md) - WebDAV server implementation
+- [http](http.md) - HTTP types
 
 ## Utilities
 

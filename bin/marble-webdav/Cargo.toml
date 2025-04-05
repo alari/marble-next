@@ -9,4 +9,32 @@ description = "WebDAV server for Marble"
 marble-core.workspace = true
 marble-db.workspace = true
 marble-storage.workspace = true
-# Dependencies will be added as needed
+
+# HTTP server
+axum.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+
+# WebDAV
+dav-server.workspace = true
+
+# Async runtime
+tokio.workspace = true
+
+# Logging and instrumentation
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+# Utilities
+async-trait.workspace = true
+bytes.workspace = true
+chrono.workspace = true
+futures.workspace = true
+http.workspace = true
+thiserror.workspace = true
+mime.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+base64.workspace = true
+sqlx.workspace = true

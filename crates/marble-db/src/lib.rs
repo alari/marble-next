@@ -5,9 +5,18 @@
 
 use sqlx::postgres::{PgPool, PgPoolOptions};
 
-mod error;
+pub mod error;
 pub use error::Error;
 pub type Result<T> = std::result::Result<T, Error>;
+
+// Re-export database error as DatabaseError for compatibility
+pub type DatabaseError = error::Error;
+
+// Authentication module
+pub mod auth;
+pub use auth::{AuthService, DatabaseAuthService, AuthError, AuthResult};
+
+// Make PgPool public so it can be used in other crates
 
 pub mod api;
 pub mod config;

@@ -58,6 +58,7 @@ impl FromRow<'_, PgRow> for User {
     fn from_row(row: &PgRow) -> std::result::Result<Self, sqlx::Error> {
         Ok(User {
             id: row.try_get("id")?,
+            uuid: row.try_get("uuid")?,
             username: row.try_get("username")?,
             password_hash: row.try_get("password_hash")?,
             created_at: row.try_get("created_at")?,
@@ -70,7 +71,7 @@ impl FromRow<'_, PgRow> for User {
 impl UserRepository for SqlxUserRepository {
     async fn find_by_id(&self, id: i32) -> Result<Option<User>> {
         let user = sqlx::query_as::<_, User>(
-            "SELECT id, username, password_hash, created_at, last_login 
+            "SELECT id, uuid, username, password_hash, created_at, last_login 
              FROM users 
              WHERE id = $1"
         )
@@ -84,7 +85,7 @@ impl UserRepository for SqlxUserRepository {
     
     async fn find_by_username(&self, username: &str) -> Result<Option<User>> {
         let user = sqlx::query_as::<_, User>(
-            "SELECT id, username, password_hash, created_at, last_login 
+            "SELECT id, uuid, username, password_hash, created_at, last_login 
              FROM users 
              WHERE username = $1"
         )
@@ -98,10 +99,11 @@ impl UserRepository for SqlxUserRepository {
     
     async fn create(&self, user: &User) -> Result<User> {
         let created_user = sqlx::query_as::<_, User>(
-            "INSERT INTO users (username, password_hash, created_at, last_login) 
-             VALUES ($1, $2, $3, $4) 
-             RETURNING id, username, password_hash, created_at, last_login"
+            "INSERT INTO users (uuid, username, password_hash, created_at, last_login) 
+             VALUES ($1, $2, $3, $4, $5) 
+             RETURNING id, uuid, username, password_hash, created_at, last_login"
         )
+        .bind(user.uuid)
         .bind(&user.username)
         .bind(&user.password_hash)
         .bind(user.created_at)
@@ -118,7 +120,7 @@ impl UserRepository for SqlxUserRepository {
             "UPDATE users 
              SET username = $1, password_hash = $2, last_login = $3 
              WHERE id = $4 
-             RETURNING id, username, password_hash, created_at, last_login"
+             RETURNING id, uuid, username, password_hash, created_at, last_login"
         )
         .bind(&user.username)
         .bind(&user.password_hash)
@@ -162,7 +164,7 @@ impl UserRepository for SqlxUserRepository {
         let offset = offset.unwrap_or(0);
         
         let users = sqlx::query_as::<_, User>(
-            "SELECT id, username, password_hash, created_at, last_login 
+            "SELECT id, uuid, username, password_hash, created_at, last_login 
              FROM users 
              ORDER BY id 
              LIMIT $1 OFFSET $2"

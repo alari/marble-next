@@ -5,11 +5,15 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+use uuid::Uuid;
+
 /// Represents a user in the database
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
     /// Primary key
     pub id: i32,
+    /// Unique UUID for tenant identification
+    pub uuid: Uuid,
     /// Unique username for identification and login
     pub username: String,
     /// Securely hashed password
@@ -25,6 +29,7 @@ impl User {
     pub fn new(username: String, password_hash: String) -> Self {
         Self {
             id: 0, // Will be assigned by database
+            uuid: Uuid::new_v4(),
             username,
             password_hash,
             created_at: Utc::now(),

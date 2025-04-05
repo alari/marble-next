@@ -1,12 +1,18 @@
 # WebDAV Integration with TenantStorage Handoff
 
-**Last Updated: 2025-04-05**
+**Last Updated: 2025-04-05** (WebDAV Skeleton Implementation with Authentication)
 
 ## Current Status
 
 We've completed the `TenantStorage` API implementation with proper tenant isolation through database metadata, efficient file operations, and comprehensive testing. We've strategically pivoted away from complex OpenDAL adapters to a more focused approach with our custom `TenantStorage` trait.
 
-The next major milestone is implementing WebDAV integration to enable direct Obsidian compatibility. After analyzing the requirements, we've decided to use a hybrid approach that leverages `dav-server` for WebDAV protocol handling while directly integrating with our `TenantStorage` API without OpenDAL adapters.
+We've also implemented the WebDAV handler skeleton with proper authentication through a dedicated authentication service in the marble-db crate. This enforces proper separation of concerns, where:
+
+1. All database queries are encapsulated within the marble-db crate
+2. Authentication logic is centralized in a reusable authentication service
+3. The WebDAV layer only contains WebDAV-specific functionality, delegating authentication to the marble-db layer
+
+The next major milestone is implementing the core WebDAV methods to enable direct Obsidian compatibility. We're using a hybrid approach that leverages `dav-server` for WebDAV protocol handling while directly integrating with our `TenantStorage` API without OpenDAL adapters.
 
 ## Implementation Strategy
 
@@ -317,11 +323,31 @@ async fn handle_webdav(
 
 ## Next Concrete Steps
 
-1. Create the WebDAV handler skeleton in `marble-webdav` crate
-2. Implement the `AuthService` interface and database implementation
+1. ✅ Create the WebDAV handler skeleton in `marble-webdav` crate
+   - Created the MarbleDavHandler with tenant isolation support
+   - Implemented the basic structure for handling WebDAV methods
+   - Added AuthService and LockManager interfaces with proper abstractions
+   - Created placeholder implementations for key WebDAV methods
+   - Set up the Axum server integration
+   - Created proper dependency documentation for all HTTP/WebDAV dependencies
+   - Updated to the latest dependency versions (axum 0.8.3, dav-server 0.7.0, http 1.3.1)
+   - Fixed build issues with proper type definitions
+
+2. ✅ Implement the `AuthService` interface and database implementation
+   - Created a proper `AuthService` trait in the marble-db crate
+   - Moved all database queries to the marble-db crate
+   - Implemented the `DatabaseAuthService` with tenant isolation
+   - Created an adapter in WebDAV to use the marble-db auth service
+   - Added placeholder for password verification to be implemented later with a proper hashing library
+   - Ensured proper separation of concerns between database access and WebDAV functionality
+
 3. Add basic GET and PROPFIND methods for read operations
+   - Implement GET method for file retrieval
+   - Implement PROPFIND for directory listing
+   - Connect to TenantStorage API
+
 4. Create unit tests for these methods
-5. Integrate with Axum for a basic WebDAV server
+5. Integrate with Axum for a basic WebDAV server and run a test server
 6. Test with a simple WebDAV client
 7. Implement remaining methods in prioritized order
 
