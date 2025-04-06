@@ -6,7 +6,7 @@ pub use api::{MarbleStorage, MarbleStorageRef};
 pub use api::tenant::{TenantStorage, TenantStorageRef, FileMetadata};
 pub use config::{FileSystemConfig, S3Config, StorageBackend, StorageConfig};
 pub use error::{StorageError, StorageResult};
-pub use r#impl::{create_storage, create_storage_with_db, create_tenant_storage};
+pub use mock::MockTenantStorage;
 pub use services::hasher::ContentHasher;
 
 // Public modules
@@ -14,6 +14,7 @@ pub mod api;
 pub mod config;
 pub mod error;
 pub mod hash;
+pub mod mock;
 
 // Internal modules
 mod backends;

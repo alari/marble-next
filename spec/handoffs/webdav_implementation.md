@@ -1,18 +1,28 @@
 # WebDAV Integration with TenantStorage Handoff
 
-**Last Updated: 2025-04-05** (WebDAV Skeleton Implementation with Authentication)
+**Last Updated: 2025-04-06** (WebDAV Implementation with LOCK functionality)
 
 ## Current Status
 
-We've completed the `TenantStorage` API implementation with proper tenant isolation through database metadata, efficient file operations, and comprehensive testing. We've strategically pivoted away from complex OpenDAL adapters to a more focused approach with our custom `TenantStorage` trait.
+We've made significant progress on the WebDAV server implementation:
 
-We've also implemented the WebDAV handler skeleton with proper authentication through a dedicated authentication service in the marble-db crate. This enforces proper separation of concerns, where:
+1. ✅ Completed the `TenantStorage` API implementation with proper tenant isolation
+2. ✅ Implemented the WebDAV handler with authentication through a dedicated service
+3. ✅ Implemented all core WebDAV methods (GET, PUT, PROPFIND, MKCOL, DELETE)
+4. ✅ Implemented advanced WebDAV operations (COPY, MOVE)
+5. ✅ Restructured the code for better maintainability with focused modules
+6. ✅ Added comprehensive test coverage for all operations
 
-1. All database queries are encapsulated within the marble-db crate
-2. Authentication logic is centralized in a reusable authentication service
-3. The WebDAV layer only contains WebDAV-specific functionality, delegating authentication to the marble-db layer
+The WebDAV implementation now supports:
 
-The next major milestone is implementing the core WebDAV methods to enable direct Obsidian compatibility. We're using a hybrid approach that leverages `dav-server` for WebDAV protocol handling while directly integrating with our `TenantStorage` API without OpenDAL adapters.
+- Browsing directories and reading files
+- Creating and uploading files
+- Creating directories
+- Deleting files and directories
+- Copying files and directories with recursive support
+- Moving/renaming files and directories
+
+We have implemented the LOCK and UNLOCK operations for proper WebDAV locking support, which provides better compatibility with clients that rely on locking for concurrency control. The implementation uses an in-memory lock manager that handles lock token generation, lock expiration, and validation.
 
 ## Implementation Strategy
 
@@ -341,22 +351,56 @@ async fn handle_webdav(
    - Added placeholder for password verification to be implemented later with a proper hashing library
    - Ensured proper separation of concerns between database access and WebDAV functionality
 
-3. Add basic GET and PROPFIND methods for read operations
-   - Implement GET method for file retrieval
-   - Implement PROPFIND for directory listing
-   - Connect to TenantStorage API
+3. ✅ Add basic GET and PROPFIND methods for read operations
+   - Implemented GET method for file retrieval
+   - Implemented PROPFIND for directory listing with XML formatting
+   - Connected methods to TenantStorage API with proper error handling
+   - Added path conversion utilities for WebDAV/storage path normalization
 
-4. Create unit tests for these methods
-5. Integrate with Axum for a basic WebDAV server and run a test server
-6. Test with a simple WebDAV client
-7. Implement remaining methods in prioritized order
+4. ✅ Add basic WRITE operations (PUT, MKCOL, DELETE)
+   - Implemented PUT method for file creation/update with content type handling
+   - Implemented MKCOL for directory creation with proper parent directory checking
+   - Implemented DELETE method with lock checking
+   - Added proper response handling with appropriate status codes
+
+5. ✅ Update server integration
+   - Properly convert WebDAV responses to Axum responses
+   - Added proper header handling for WebDAV compatibility
+   - Improved error mapping for WebDAV-specific errors
+   - Updated main function to initialize services and start the server
+
+6. ✅ Add unit tests for the WebDAV methods
+   - Created comprehensive test suite with MockTenantStorage
+   - Implemented tests for all core WebDAV methods
+   - Added utility functions for test data setup
+   - Covered success cases and error handling
+
+7. ✅ Implement advanced WebDAV functionality:
+   - ✅ COPY operation for file duplication
+   - ✅ MOVE operation for renaming and relocating files
+   - ✅ LOCK and UNLOCK methods with proper integration
+   - ✅ Code reorganization to improve maintainability
+
+8. Add advanced server features:
+   - Conditional requests (If-Match, If-None-Match)
+   - Custom WebDAV properties
+   - Performance optimizations
+
+9. Test with Obsidian:
+   - Manual testing with Obsidian WebDAV remote vault
+   - Verify compatibility with Obsidian-specific file patterns
+   - Test large vault synchronization performance
+=======
 
 ## Timeline Estimate
 
-- **Phase 1 (Core Infrastructure)**: 1-2 days
-- **Phase 2 (Basic Methods)**: 2-3 days
-- **Phase 3 (Advanced Methods)**: 3-4 days
-- **Phase 4 (Optimizations)**: 2-3 days
+- **Phase 1 (Core Infrastructure)**: ✅ Completed
+- **Phase 2 (Basic Methods)**: ✅ Completed
+- **Phase 3 (Advanced Methods)**: ✅ Completed
+  - COPY and MOVE operations ✅
+  - Locking functionality (LOCK and UNLOCK) ✅
+- **Phase 4 (Optimizations)**: ⏳ Not Started
+=======
 
 ## References
 

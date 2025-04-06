@@ -1,4 +1,5 @@
-use marble_core::error::{MarbleError, DatabaseError, StorageError};
+use marble_core::error::{MarbleError, DatabaseError};
+use marble_storage::StorageError;
 use thiserror::Error;
 
 /// Errors that can occur in the WebDAV server
@@ -23,6 +24,14 @@ pub enum Error {
     /// Lock errors
     #[error("Lock error: {0}")]
     Lock(#[from] LockError),
+    
+    /// Lock operation failed
+    #[error("Lock operation failed: {0}")]
+    LockFailed(String),
+    
+    /// Unlock operation failed
+    #[error("Unlock operation failed: {0}")]
+    UnlockFailed(String),
 
     /// Internal server errors
     #[error("Internal server error: {0}")]
@@ -32,7 +41,23 @@ pub enum Error {
 impl From<MarbleError> for Error {
     fn from(err: MarbleError) -> Self {
         match err {
-            MarbleError::Storage(e) => Error::Storage(e),
+            MarbleError::Storage(core_storage_error) => {
+                // Manual conversion from core::StorageError to storage::StorageError
+                match core_storage_error {
+                    marble_core::error::StorageError::NotFound(path) => 
+                        Error::Storage(marble_storage::StorageError::NotFound(path)),
+                    marble_core::error::StorageError::PermissionDenied(msg) => 
+                        Error::Storage(marble_storage::StorageError::Authorization(msg)),
+                    marble_core::error::StorageError::InvalidPath(msg) => 
+                        Error::Storage(marble_storage::StorageError::Validation(msg)),
+                    marble_core::error::StorageError::AlreadyExists(msg) =>
+                        Error::Storage(marble_storage::StorageError::Validation(msg)),
+                    marble_core::error::StorageError::Io(msg) =>
+                        Error::Storage(marble_storage::StorageError::Storage(msg)),
+                    marble_core::error::StorageError::Backend(msg) =>
+                        Error::Storage(marble_storage::StorageError::Storage(msg)),
+                }
+            },
             MarbleError::Database(e) => Error::Database(e),
             _ => Error::Internal(format!("Marble error: {}", err)),
         }

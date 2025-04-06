@@ -1,15 +1,25 @@
 use crate::api::{AuthServiceRef, LockManagerRef};
 use crate::auth::extract_basic_auth;
 use crate::error::{AuthError, Error};
+use crate::operations;
 use bytes::Bytes;
 use dav_server::DavMethod;
 use http::{HeaderMap, Response, StatusCode};
 use marble_storage::api::TenantStorageRef;
-use tracing::{debug, info, warn};
+use tracing::{info, warn};
 use uuid::Uuid;
+use std::sync::Arc;
 
 /// Type alias for WebDAV response
 pub type DavResponse = Response<Bytes>;
+
+// Tests module
+#[cfg(test)]
+mod tests {
+    // This is a placeholder for the main dav_handler tests
+    // All test implementations have been moved to the dedicated tests directory
+    // See the tests/ directory for implementation details
+}
 
 /// Marble WebDAV handler integrating with TenantStorage
 pub struct MarbleDavHandler {
@@ -35,6 +45,87 @@ impl MarbleDavHandler {
             auth_service,
             lock_manager,
         }
+    }
+    
+    // Helper methods for tests
+    #[cfg(test)]
+    pub(crate) async fn handle_get(&self, tenant_id: Uuid, path: &str) -> Result<DavResponse, Error> {
+        operations::handle_get(&self.tenant_storage, tenant_id, path).await
+    }
+    
+    #[cfg(test)]
+    pub(crate) async fn handle_put(
+        &self,
+        tenant_id: Uuid,
+        path: &str,
+        headers: HeaderMap,
+        body: Bytes,
+    ) -> Result<DavResponse, Error> {
+        operations::handle_put(&self.tenant_storage, tenant_id, path, headers, body).await
+    }
+    
+    #[cfg(test)]
+    pub(crate) async fn handle_propfind(
+        &self,
+        tenant_id: Uuid,
+        path: &str,
+        body: Bytes,
+    ) -> Result<DavResponse, Error> {
+        operations::handle_propfind(&self.tenant_storage, tenant_id, path, body).await
+    }
+    
+    #[cfg(test)]
+    pub(crate) async fn handle_mkcol(&self, tenant_id: Uuid, path: &str) -> Result<DavResponse, Error> {
+        operations::handle_mkcol(&self.tenant_storage, tenant_id, path).await
+    }
+    
+    #[cfg(test)]
+    pub(crate) async fn handle_delete(&self, tenant_id: Uuid, path: &str) -> Result<DavResponse, Error> {
+        operations::handle_delete(&self.tenant_storage, &self.lock_manager, tenant_id, path).await
+    }
+    
+    #[cfg(test)]
+    pub(crate) async fn handle_copy(&self, tenant_id: Uuid, path: &str, headers: HeaderMap) -> Result<DavResponse, Error> {
+        operations::handle_copy(
+            &self.tenant_storage, 
+            tenant_id, 
+            path, 
+            headers,
+            |p| self.normalize_path(p)
+        ).await
+    }
+    
+    #[cfg(test)]
+    pub(crate) async fn handle_move(&self, tenant_id: Uuid, path: &str, headers: HeaderMap) -> Result<DavResponse, Error> {
+        operations::handle_move(
+            &self.tenant_storage,
+            &self.lock_manager,
+            tenant_id,
+            path,
+            headers,
+            |p| self.normalize_path(p)
+        ).await
+    }
+    
+    #[cfg(test)]
+    pub(crate) async fn handle_lock(&self, tenant_id: Uuid, path: &str, headers: HeaderMap, body: Bytes) -> Result<DavResponse, Error> {
+        operations::handle_lock(
+            &self.lock_manager,
+            tenant_id,
+            path,
+            headers,
+            body
+        ).await
+    }
+    
+    #[cfg(test)]
+    pub(crate) async fn handle_unlock(&self, tenant_id: Uuid, path: &str, headers: HeaderMap) -> Result<DavResponse, Error> {
+        operations::handle_unlock(
+            &self.lock_manager,
+            tenant_id,
+            path,
+            headers
+        ).await
     }
 
     /// Authenticate a request and return the tenant ID
@@ -86,62 +177,6 @@ impl MarbleDavHandler {
             .unwrap()
     }
     
-    /// Handle GET method to retrieve a file
-    async fn handle_get(&self, tenant_id: Uuid, path: &str) -> Result<DavResponse, Error> {
-        // Placeholder implementation - will be fleshed out in later steps
-        debug!("GET request for path: {} by tenant: {}", path, tenant_id);
-        
-        // For now, just return a placeholder response
-        Err(Error::Internal("GET method not yet implemented".to_string()))
-    }
-    
-    /// Handle PUT method to create or update a file
-    async fn handle_put(
-        &self, 
-        tenant_id: Uuid, 
-        path: &str, 
-        headers: HeaderMap, 
-        body: Bytes
-    ) -> Result<DavResponse, Error> {
-        // Placeholder implementation - will be fleshed out in later steps
-        debug!("PUT request for path: {} by tenant: {}", path, tenant_id);
-        
-        // For now, just return a placeholder response
-        Err(Error::Internal("PUT method not yet implemented".to_string()))
-    }
-    
-    /// Handle PROPFIND method to list properties or directory contents
-    async fn handle_propfind(
-        &self, 
-        tenant_id: Uuid, 
-        path: &str, 
-        body: Bytes
-    ) -> Result<DavResponse, Error> {
-        // Placeholder implementation - will be fleshed out in later steps
-        debug!("PROPFIND request for path: {} by tenant: {}", path, tenant_id);
-        
-        // For now, just return a placeholder response
-        Err(Error::Internal("PROPFIND method not yet implemented".to_string()))
-    }
-    
-    /// Handle MKCOL method to create a directory
-    async fn handle_mkcol(&self, tenant_id: Uuid, path: &str) -> Result<DavResponse, Error> {
-        // Placeholder implementation - will be fleshed out in later steps
-        debug!("MKCOL request for path: {} by tenant: {}", path, tenant_id);
-        
-        // For now, just return a placeholder response
-        Err(Error::Internal("MKCOL method not yet implemented".to_string()))
-    }
-    
-    /// Handle DELETE method to remove a file or directory
-    async fn handle_delete(&self, tenant_id: Uuid, path: &str) -> Result<DavResponse, Error> {
-        // Placeholder implementation - will be fleshed out in later steps
-        debug!("DELETE request for path: {} by tenant: {}", path, tenant_id);
-        
-        // For now, just return a placeholder response
-        Err(Error::Internal("DELETE method not yet implemented".to_string()))
-    }
-    
     /// Dispatch WebDAV method to appropriate handler
     pub async fn handle(
         &self,
@@ -160,11 +195,70 @@ impl MarbleDavHandler {
         
         // Handle method based on tenant ID and normalized path
         match method {
-            DavMethod::Get => self.handle_get(tenant_id, &normalized_path).await,
-            DavMethod::Put => self.handle_put(tenant_id, &normalized_path, headers, body).await,
-            DavMethod::PropFind => self.handle_propfind(tenant_id, &normalized_path, body).await,
-            DavMethod::MkCol => self.handle_mkcol(tenant_id, &normalized_path).await,
-            DavMethod::Delete => self.handle_delete(tenant_id, &normalized_path).await,
+            // Basic file operations
+            DavMethod::Get => operations::handle_get(&self.tenant_storage, tenant_id, &normalized_path).await,
+            
+            DavMethod::Put => operations::handle_put(
+                &self.tenant_storage, 
+                tenant_id, 
+                &normalized_path, 
+                headers, 
+                body
+            ).await,
+            
+            DavMethod::PropFind => operations::handle_propfind(
+                &self.tenant_storage, 
+                tenant_id, 
+                &normalized_path, 
+                body
+            ).await,
+            
+            DavMethod::MkCol => operations::handle_mkcol(
+                &self.tenant_storage, 
+                tenant_id, 
+                &normalized_path
+            ).await,
+            
+            DavMethod::Delete => operations::handle_delete(
+                &self.tenant_storage,
+                &self.lock_manager,
+                tenant_id, 
+                &normalized_path
+            ).await,
+            
+            // Advanced operations (implemented)
+            DavMethod::Copy => operations::handle_copy(
+                &self.tenant_storage,
+                tenant_id,
+                &normalized_path,
+                headers,
+                |p| self.normalize_path(p)
+            ).await,
+            
+            DavMethod::Move => operations::handle_move(
+                &self.tenant_storage,
+                &self.lock_manager,
+                tenant_id,
+                &normalized_path,
+                headers,
+                |p| self.normalize_path(p)
+            ).await,
+            
+            // Lock operations
+            DavMethod::Lock => operations::handle_lock(
+                &self.lock_manager,
+                tenant_id,
+                &normalized_path,
+                headers,
+                body
+            ).await,
+            
+            DavMethod::Unlock => operations::handle_unlock(
+                &self.lock_manager,
+                tenant_id,
+                &normalized_path,
+                headers
+            ).await,
             
             // Other methods will be implemented later
             _ => {

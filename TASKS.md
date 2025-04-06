@@ -147,29 +147,30 @@ The implementation will follow these steps, with each component being individual
 
 2. **WebDAV Server Framework (bin/marble-webdav)**
    - [WIP] Implement WebDAV server using standard dav-server crate
-   - [TODO] Phase 1: Setup WebDAV Server Framework
-     - [TODO] Add dav-server to dependencies
-     - [TODO] Create WebDAV handler structure with TenantStorage integration
-     - [TODO] Implement authentication to extract tenant IDs from requests
-     - [TODO] Create Axum integration for HTTP serving
-   - [TODO] Phase 2: Implement Basic Authentication
-     - [TODO] Create AuthService trait for user authentication
-     - [TODO] Implement database-backed authentication service  
-     - [TODO] Extract credentials from WebDAV requests
-     - [TODO] Map usernames to tenant UUIDs for TenantStorage operations
-   - [TODO] Phase 3: Implement Basic Path Handling
-     - [TODO] Implement path normalization between WebDAV and TenantStorage
-     - [TODO] Handle root directory special cases
-     - [TODO] Ensure proper URL encoding/decoding
-   - [TODO] Phase 4: Implement Core WebDAV Methods
-     - [TODO] Implement GET method for file retrieval
-     - [TODO] Implement PROPFIND for directory listing
-     - [TODO] Implement PUT method for file creation/update
-     - [TODO] Implement MKCOL for directory creation
-     - [TODO] Implement DELETE method for file/directory removal
-   - [TODO] Phase 5: Implement Advanced WebDAV Functionality
-     - [TODO] Implement COPY and MOVE operations
-     - [TODO] Implement lock management
+   - [DONE] Phase 1: Setup WebDAV Server Framework
+     - [DONE] Add dav-server to dependencies
+     - [DONE] Create WebDAV handler structure with TenantStorage integration
+     - [DONE] Implement authentication to extract tenant IDs from requests
+     - [DONE] Create Axum integration for HTTP serving
+   - [DONE] Phase 2: Implement Basic Authentication
+     - [DONE] Create AuthService trait for user authentication
+     - [DONE] Implement database-backed authentication service  
+     - [DONE] Extract credentials from WebDAV requests
+     - [DONE] Map usernames to tenant UUIDs for TenantStorage operations
+   - [DONE] Phase 3: Implement Basic Path Handling
+     - [DONE] Implement path normalization between WebDAV and TenantStorage
+     - [DONE] Handle root directory special cases
+     - [DONE] Ensure proper URL encoding/decoding
+   - [DONE] Phase 4: Implement Core WebDAV Methods
+     - [DONE] Implement GET method for file retrieval
+     - [DONE] Implement PROPFIND for directory listing
+     - [DONE] Implement PUT method for file creation/update
+     - [DONE] Implement MKCOL for directory creation
+     - [DONE] Implement DELETE method for file/directory removal
+   - [WIP] Phase 5: Implement Advanced WebDAV Functionality
+     - [DONE] Implement COPY and MOVE operations
+     - [DONE] Reorganize code for better maintainability
+     - [DONE] Implement lock management (LOCK and UNLOCK operations)
      - [TODO] Add WebDAV property support
    - [TODO] Phase 6: Testing and Optimization
      - [TODO] Create comprehensive integration tests
